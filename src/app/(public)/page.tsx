@@ -6,16 +6,16 @@ export default async function Home() {
     return (
         <main className="min-h-screen bg-background flex flex-col items-center">
             {/* Header Section */}
-            <section className="w-full pt-28 sm:pt-40 pb-10 text-center px-4 max-w-4xl mx-auto">
-                <div className="space-y-2 mb-8">
-                    <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-black tracking-tighter text-foreground leading-none">
+            <section className="w-full pt-32 sm:pt-40 pb-10 text-center px-4 max-w-4xl mx-auto">
+                <div className="space-y-1 mb-6">
+                    <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-foreground leading-none">
                         Quinta RV
                     </h1>
-                    <p className="text-xl sm:text-3xl md:text-4xl font-bold text-primary italic tracking-tight">
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-primary italic tracking-tight">
                         Yukyry - Luque
                     </p>
                 </div>
-                <p className="text-lg sm:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium balance leading-relaxed px-4">
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto font-medium balance leading-relaxed px-4">
                     Un lugar para divertirte con la familia y amigos.<br />
                     <span className="text-primary/80 font-bold">Somos pet friendly.</span>
                 </p>

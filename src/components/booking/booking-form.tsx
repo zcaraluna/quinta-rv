@@ -8,7 +8,7 @@ import { format, isBefore, startOfDay, getDay } from "date-fns"
 import { es } from "date-fns/locale"
 import { CalendarIcon, Loader2, Info, CheckCircle2 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -114,10 +114,12 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
 
     const isDateDisabled = (date: Date) => {
         if (isBefore(date, startOfDay(new Date()))) return true
-        // If both slots are taken, disable the date. 
-        // For simplicity in the picker, we don't disable dates based on slots here yet.
-        // We handle selection in the slot radio button.
-        return false
+
+        const dateStr = format(date, "yyyy-MM-dd")
+        const slotsTaken = unavailableSlots.filter(s => s.date === dateStr)
+
+        // If there are 2 slots and both are taken, disable the date
+        return slotsTaken.length >= 2
     }
 
     const isSlotDisabled = (slot: string) => {
@@ -267,7 +269,12 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                             <FormItem>
                                 <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Nombre completo</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Juan Pérez" className="rounded-xl h-11" {...field} />
+                                    <Input
+                                        placeholder="JUAN PÉREZ"
+                                        className="rounded-xl h-11 uppercase"
+                                        {...field}
+                                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -294,7 +301,12 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                 <FormItem>
                                     <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Email</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="juan@ejemplo.com" className="rounded-xl h-11" {...field} />
+                                        <Input
+                                            placeholder="juan@ejemplo.com"
+                                            className="rounded-xl h-11 lowercase"
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.value.toLowerCase())}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -311,7 +323,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                             <span className="font-bold text-primary">Total a pagar:</span>
                         </div>
                         <span className="text-2xl font-black text-primary">
-                            {totalPrice.toLocaleString("es-PY")} gs
+                            {formatCurrency(totalPrice)}
                         </span>
                     </div>
                 )}

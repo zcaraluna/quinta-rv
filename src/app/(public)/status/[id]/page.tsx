@@ -28,7 +28,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
     const isConfirmed = booking.status === 'CONFIRMED';
 
     // WhatsApp Message Generator
-    const waNumber = "5491100000000"; // Replace with real admin number from settings
+    const waNumber = "595983145432"; // Correct format for 0983145432
     const waMessage = `Hola! Envío comprobante para la reserva ${booking.id.slice(0, 8)} a nombre de ${booking.guestName}.`;
     const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
 
@@ -94,13 +94,13 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
 
                     {/* Payment Info Section */}
                     {showPayment && (
-                        <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
-                            <p className="font-medium">Datos Bancarios para Transferencia:</p>
+                        <div className="bg-muted p-4 rounded-lg space-y-2 text-sm border-l-4 border-l-primary">
+                            <p className="font-bold">Datos para Transferencia:</p>
                             <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                                <span className="text-muted-foreground">Alias:</span>
-                                <span className="font-mono">CASA.QUINTA.RELAX</span>
-                                <span className="text-muted-foreground">CBU:</span>
-                                <span className="font-mono">0000003100000000000000</span>
+                                <span className="text-muted-foreground">Titular:</span>
+                                <span className="font-bold">Evelin Vargas</span>
+                                <span className="text-muted-foreground">Alias (Cél):</span>
+                                <span className="font-mono font-bold">0982336705</span>
                             </div>
                         </div>
                     )}

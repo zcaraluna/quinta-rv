@@ -130,7 +130,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-2xl border shadow-xl">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-2xl border shadow-md">
                 <div className="flex justify-between items-start">
                     <div className="space-y-1">
                         <h3 className="text-2xl font-black tracking-tight">Reservar</h3>
@@ -203,7 +203,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                                 htmlFor="day"
                                                 className={cn(
                                                     "flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all h-full text-center hover:bg-muted",
-                                                    field.value === "DAY" ? "border-primary bg-primary/5 shadow-inner" : "border-muted bg-transparent",
+                                                    field.value === "DAY" ? "border-primary bg-primary/5" : "border-muted bg-transparent",
                                                     isSlotDisabled("DAY") && "opacity-30 cursor-not-allowed grayscale"
                                                 )}
                                             >
@@ -219,7 +219,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                                 htmlFor="night"
                                                 className={cn(
                                                     "flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all h-full text-center hover:bg-muted",
-                                                    field.value === "NIGHT" ? "border-primary bg-primary/5 shadow-inner" : "border-muted bg-transparent",
+                                                    field.value === "NIGHT" ? "border-primary bg-primary/5" : "border-muted bg-transparent",
                                                     isSlotDisabled("NIGHT") && "opacity-30 cursor-not-allowed grayscale"
                                                 )}
                                             >
@@ -328,7 +328,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                     </div>
                 )}
 
-                <Button type="submit" className="w-full h-14 rounded-xl text-lg font-black shadow-lg shadow-primary/20" disabled={isPending || !watchDate}>
+                <Button type="submit" className="w-full h-14 rounded-xl text-lg font-black" disabled={isPending || !watchDate}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isPending ? "Procesando..." : "Confirmar Reserva"}
                 </Button>

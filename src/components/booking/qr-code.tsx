@@ -32,7 +32,7 @@ export function BookingQRCode({ value, id }: { value: string; id: string }) {
 
     return (
         <div className="flex flex-col items-center gap-4">
-            <div ref={canvasRef} className="p-4 bg-white rounded-2xl shadow-xl border-4 border-muted/20 inline-block overflow-hidden">
+            <div ref={canvasRef} className="p-4 bg-white rounded-2xl shadow-md border inline-block overflow-hidden">
                 <QRCodeCanvas
                     value={value}
                     size={200}

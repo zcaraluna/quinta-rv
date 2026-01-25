@@ -34,7 +34,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
 
     return (
         <main className="min-h-screen bg-muted/20 pt-32 pb-20 px-4 flex justify-center items-start">
-            <Card className="max-w-md w-full shadow-2xl border-t-8 border-t-primary rounded-[2rem] overflow-hidden">
+            <Card className="max-w-md w-full shadow-xl border-t-8 border-t-primary rounded-[2rem] overflow-hidden">
                 <CardHeader className="text-center pb-2">
                     <div className="mx-auto mb-4">
                         {isConfirmed ? (
@@ -52,7 +52,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                 <CardContent className="space-y-6">
                     {/* Countdown Section */}
                     {showPayment && booking.expiresAt && (
-                        <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 text-center space-y-2 shadow-inner">
+                        <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 text-center space-y-2">
                             <p className="text-xs text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest">
                                 Tu pre-reserva expira en:
                             </p>
@@ -97,10 +97,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                         </div>
                     )}
 
-                    {/* QR Section - Always show for confirmed, or if requested by user for pending too? 
-                        The user asked specifically to put it below the button. I'll show it for confirmed people mainly or as a voucher.
-                        Actually, let's show it at the end.
-                    */}
+                    {/* QR Section */}
                     {isConfirmed && (
                         <div className="text-center space-y-4 pt-4 border-t border-dashed">
                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tu Pase de Entrada</p>
@@ -112,17 +109,12 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                 <CardFooter className="flex-col gap-3 pb-8">
                     {showPayment && (
                         <>
-                            <Button className="w-full h-14 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-green-200" asChild>
+                            <Button className="w-full h-14 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black text-lg shadow-lg" asChild>
                                 <a href={waLink} target="_blank" rel="noopener noreferrer">
                                     <MessageCircle className="mr-2 h-6 w-6" />
                                     Enviar Comprobante
                                 </a>
                             </Button>
-                            {/* User asked for Download QR below this button too if applicable? 
-                                Usually for pending we don't have the "entry QR", but I will provide a general one or wait.
-                                The user said "Abajo del botón de enviar comprobante, quiero que le des... descargar el código QR"
-                                So I will show the QR component here too for pending state but maybe with a "Pre-reserva" label.
-                            */}
                             <div className="pt-4 w-full flex flex-col items-center gap-2">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">ID de Reserva Provisional</p>
                                 <BookingQRCode value={booking.id} id={booking.id} />

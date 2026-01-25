@@ -5,17 +5,29 @@ import { bookings } from './schema';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { addHours } from 'date-fns';
+import { addHours, format, getDay, startOfDay } from 'date-fns';
 import { and, gte, lte, or, eq, sql } from 'drizzle-orm';
 
+const PRICING = {
+    GENERAL: {
+        WEEKDAY: { DAY: 500000, NIGHT: 650000 },
+        SATURDAY: { DAY: 700000, NIGHT: 800000 },
+        SUNDAY: { DAY: 800000, NIGHT: 650000 },
+    },
+    COUPLE: {
+        WEEKDAY: { DAY: 250000, NIGHT: 250000 },
+        SATURDAY: { DAY: 300000, NIGHT: 400000 },
+        SUNDAY: { DAY: 400000, NIGHT: 300000 },
+    }
+}
+
 const bookingSchema = z.object({
-    guestName: z.string().min(3, "El nombre es obligatorio"),
-    guestEmail: z.string().email("Email inválido"),
-    guestWhatsapp: z.string().min(8, "WhatsApp inválido"),
-    dateRange: z.object({
-        from: z.date(),
-        to: z.date(),
-    }),
+    guestName: z.string().min(3),
+    guestEmail: z.string().email(),
+    guestWhatsapp: z.string().min(8),
+    bookingDate: z.date(),
+    slot: z.enum(["DAY", "NIGHT"]),
+    isCouplePromo: z.boolean(),
 });
 
 export async function createBooking(prevState: any, formData: FormData) {
@@ -23,35 +35,26 @@ export async function createBooking(prevState: any, formData: FormData) {
         guestName: formData.get('guestName'),
         guestEmail: formData.get('guestEmail'),
         guestWhatsapp: formData.get('guestWhatsapp'),
-        dateRange: {
-            from: new Date(formData.get('from') as string),
-            to: new Date(formData.get('to') as string),
-        }
+        bookingDate: new Date(formData.get('bookingDate') as string),
+        slot: formData.get('slot'),
+        isCouplePromo: formData.get('isCouplePromo') === "true",
     };
 
-    // 1. Validation
     const result = bookingSchema.safeParse(rawData);
 
     if (!result.success) {
-        return { error: "Datos inválidos. Verifica los campos." };
+        return { error: "Datos inválidos." };
     }
 
-    const { guestName, guestEmail, guestWhatsapp, dateRange } = result.data;
-    const { from: startDate, to: endDate } = dateRange;
+    const { guestName, guestEmail, guestWhatsapp, bookingDate, slot, isCouplePromo } = result.data;
 
-    // 2. Check Availability (Overlap + Status Logic)
-    // Blocked if: Status is CONFIRMED/MAINTENANCE 
-    // OR Status is PENDING_PAYMENT AND now() < expires_at
-
+    // 1. Check Availability for that day + slot
     const overlap = await db.select().from(bookings).where(
         and(
-            // Date Overlap Logic: (StartA <= EndB) and (EndA >= StartB)
-            lte(bookings.startDate, endDate),
-            gte(bookings.endDate, startDate),
+            eq(bookings.bookingDate, startOfDay(bookingDate)),
+            eq(bookings.slot, slot),
             or(
-                // Confirmed or Maintenance
                 or(eq(bookings.status, 'CONFIRMED'), eq(bookings.status, 'MAINTENANCE')),
-                // Pending Payment within 4 hour window
                 and(
                     eq(bookings.status, 'PENDING_PAYMENT'),
                     gte(bookings.expiresAt, new Date())
@@ -61,44 +64,39 @@ export async function createBooking(prevState: any, formData: FormData) {
     );
 
     if (overlap.length > 0) {
-        return { error: "Fechas no disponibles. Alguien más acaba de reservar." };
+        return { error: "Este horario ya ha sido reservado." };
     }
 
-    // 3. Create Booking
-    // Calculate expiry
+    // 2. Calculate Price (Server-side for security)
+    const dayOfWeek = getDay(bookingDate); // 0=Sun, 6=Sat
+    const type = isCouplePromo ? "COUPLE" : "GENERAL";
+    let dayType: "WEEKDAY" | "SATURDAY" | "SUNDAY" = "WEEKDAY";
+    if (dayOfWeek === 6) dayType = "SATURDAY";
+    else if (dayOfWeek === 0) dayType = "SUNDAY";
+
+    const price = PRICING[type][dayType][slot];
     const expiresAt = addHours(new Date(), 4);
 
-    // TODO: Fetch price from settings. For now, hardcode or calculate.
-    // Assuming a fixed price or passing it ? Security risk if passed from client.
-    // We should fetch price settings here. 
-    // Placeholder: $50.000 per night.
-    const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const pricePerNight = 50000; // Placeholder
-    const totalPrice = (nights * pricePerNight).toString();
-
+    // 3. Create
     const [newBooking] = await db.insert(bookings).values({
         guestName,
         guestEmail,
         guestWhatsapp,
-        startDate,
-        endDate,
-        totalPrice,
+        bookingDate: startOfDay(bookingDate),
+        slot,
+        isCouplePromo: isCouplePromo.toString(),
+        totalPrice: price.toString(),
         status: 'PENDING_PAYMENT',
         expiresAt,
     }).returning({ id: bookings.id });
 
-    // 4. Redirect
     redirect(`/status/${newBooking.id}`);
 }
 
-export async function checkAvailability(from: Date, to: Date) {
-    // Helper for client side check if needed
-}
-
-export async function getUnavailableDates() {
+export async function getUnavailableSlots() {
     const activeBookings = await db.select({
-        start: bookings.startDate,
-        end: bookings.endDate
+        date: bookings.bookingDate,
+        slot: bookings.slot
     })
         .from(bookings)
         .where(
@@ -112,5 +110,8 @@ export async function getUnavailableDates() {
             )
         );
 
-    return activeBookings;
+    return activeBookings.map(b => ({
+        date: format(b.date, "yyyy-MM-dd"),
+        slot: b.slot
+    }));
 }

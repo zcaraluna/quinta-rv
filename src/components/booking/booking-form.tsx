@@ -4,10 +4,9 @@ import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { format, isBefore, startOfDay, addDays } from "date-fns"
+import { format, isBefore, startOfDay, getDay } from "date-fns"
 import { es } from "date-fns/locale"
-import { CalendarIcon, Loader2 } from "lucide-react"
-import { DateRange } from "react-day-picker"
+import { CalendarIcon, Loader2, Info, CheckCircle2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -27,24 +26,39 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { createBooking } from "@/lib/actions"
+import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
     guestName: z.string().min(2, { message: "Nombre muy corto" }),
     guestEmail: z.string().email({ message: "Email inválido" }),
     guestWhatsapp: z.string().min(8, { message: "Mínimo 8 dígitos" }),
-    dateRange: z.object({
-        from: z.date(),
-        to: z.date(),
-    }),
+    bookingDate: z.date({ required_error: "Selecciona un día" }),
+    slot: z.enum(["DAY", "NIGHT"], { required_error: "Selecciona un horario" }),
+    isCouplePromo: z.boolean().default(false),
 })
 
 interface BookingFormProps {
-    unavailableDates: { start: Date; end: Date }[]
+    unavailableSlots: { date: string; slot: string }[]
 }
 
-export function BookingForm({ unavailableDates }: BookingFormProps) {
+const PRICING = {
+    GENERAL: {
+        WEEKDAY: { DAY: 500000, NIGHT: 650000 },
+        SATURDAY: { DAY: 700000, NIGHT: 800000 },
+        SUNDAY: { DAY: 800000, NIGHT: 650000 }, // Night as weekday or specific
+    },
+    COUPLE: {
+        WEEKDAY: { DAY: 250000, NIGHT: 250000 },
+        SATURDAY: { DAY: 300000, NIGHT: 400000 },
+        SUNDAY: { DAY: 400000, NIGHT: 300000 },
+    }
+}
+
+export function BookingForm({ unavailableSlots }: BookingFormProps) {
     const [isPending, startTransition] = React.useTransition()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -53,16 +67,38 @@ export function BookingForm({ unavailableDates }: BookingFormProps) {
             guestName: "",
             guestEmail: "",
             guestWhatsapp: "",
+            slot: "DAY",
+            isCouplePromo: false,
         },
     })
+
+    const watchDate = form.watch("bookingDate")
+    const watchSlot = form.watch("slot")
+    const watchCouple = form.watch("isCouplePromo")
+
+    const calculatePrice = React.useCallback(() => {
+        if (!watchDate) return 0
+        const dayOfWeek = getDay(watchDate) // 0=Sun, 1=Mon, ..., 6=Sat
+        const type = watchCouple ? "COUPLE" : "GENERAL"
+
+        let dayType: "WEEKDAY" | "SATURDAY" | "SUNDAY" = "WEEKDAY"
+        if (dayOfWeek === 6) dayType = "SATURDAY"
+        else if (dayOfWeek === 0) dayType = "SUNDAY"
+
+        return PRICING[type][dayType][watchSlot as "DAY" | "NIGHT"]
+    }, [watchDate, watchSlot, watchCouple])
+
+    const totalPrice = calculatePrice()
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         const formData = new FormData()
         formData.append("guestName", values.guestName)
         formData.append("guestEmail", values.guestEmail)
         formData.append("guestWhatsapp", values.guestWhatsapp)
-        formData.append("from", values.dateRange.from.toISOString())
-        formData.append("to", values.dateRange.to.toISOString())
+        formData.append("bookingDate", values.bookingDate.toISOString())
+        formData.append("slot", values.slot)
+        formData.append("isCouplePromo", values.isCouplePromo.toString())
+        formData.append("totalPrice", totalPrice.toString())
 
         startTransition(async () => {
             const result = await createBooking(null, formData)
@@ -74,118 +110,211 @@ export function BookingForm({ unavailableDates }: BookingFormProps) {
         })
     }
 
-    // Disable dates: Past dates + Unavailable ranges
     const isDateDisabled = (date: Date) => {
-        if (isBefore(date, startOfDay(new Date()))) return true;
+        if (isBefore(date, startOfDay(new Date()))) return true
+        // If both slots are taken, disable the date. 
+        // For simplicity in the picker, we don't disable dates based on slots here yet.
+        // We handle selection in the slot radio button.
+        return false
+    }
 
-        return unavailableDates.some(range => {
-            // Check if date is within range [start, end]
-            // Fix: Ensure we compare properly (start of day)
-            return date >= startOfDay(range.start) && date <= startOfDay(range.end);
-        });
-    };
+    const isSlotDisabled = (slot: string) => {
+        if (!watchDate) return false
+        const dateStr = format(watchDate, "yyyy-MM-dd")
+        return unavailableSlots.some(s => s.date === dateStr && s.slot === slot)
+    }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-xl border shadow-sm">
-                <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">Reserva tu Estadía</h3>
-                    <p className="text-sm text-muted-foreground">Selecciona tus fechas y completa tus datos.</p>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-2xl border shadow-xl">
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <h3 className="text-2xl font-black tracking-tight">Reservar</h3>
+                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Quinta RV - Luque</p>
+                    </div>
+                    <PricingModal />
                 </div>
 
-                <FormField
-                    control={form.control}
-                    name="dateRange"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Fechas</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full pl-3 text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
-                                        >
-                                            {field.value?.from ? (
-                                                field.value.to ? (
-                                                    <>
-                                                        {format(field.value.from, "LLL dd, y", { locale: es })} -{" "}
-                                                        {format(field.value.to, "LLL dd, y", { locale: es })}
-                                                    </>
+                <div className="grid gap-6">
+                    {/* Date Picker */}
+                    <FormField
+                        control={form.control}
+                        name="bookingDate"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Fecha</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full h-12 rounded-xl text-left font-semibold",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {field.value ? (
+                                                    format(field.value, "PPP", { locale: es })
                                                 ) : (
-                                                    format(field.value.from, "LLL dd, y", { locale: es })
-                                                )
-                                            ) : (
-                                                <span>Selecciona fechas</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="range"
-                                        selected={field.value as DateRange} // Cast for react-day-picker compatibility
-                                        onSelect={field.onChange}
-                                        disabled={isDateDisabled}
-                                        numberOfMonths={2}
-                                        initialFocus
-                                        locale={es}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                                    <span>Selecciona un día</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            disabled={isDateDisabled}
+                                            initialFocus
+                                            locale={es}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <div className="grid gap-4 md:grid-cols-2">
+                    {/* Slot Selector */}
+                    <FormField
+                        control={form.control}
+                        name="slot"
+                        render={({ field }) => (
+                            <FormItem className="space-y-3">
+                                <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Horario Disponibles</FormLabel>
+                                <FormControl>
+                                    <RadioGroup
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        className="grid grid-cols-2 gap-4"
+                                    >
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="DAY" id="day" className="sr-only" disabled={isSlotDisabled("DAY")} />
+                                            </FormControl>
+                                            <label
+                                                htmlFor="day"
+                                                className={cn(
+                                                    "flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all h-full text-center hover:bg-muted",
+                                                    field.value === "DAY" ? "border-primary bg-primary/5 shadow-inner" : "border-muted bg-transparent",
+                                                    isSlotDisabled("DAY") && "opacity-30 cursor-not-allowed grayscale"
+                                                )}
+                                            >
+                                                <span className="text-sm font-bold">Día</span>
+                                                <span className="text-[10px] text-muted-foreground font-medium">9:00 AM - 6:00 PM</span>
+                                            </label>
+                                        </FormItem>
+                                        <FormItem>
+                                            <FormControl>
+                                                <RadioGroupItem value="NIGHT" id="night" className="sr-only" disabled={isSlotDisabled("NIGHT")} />
+                                            </FormControl>
+                                            <label
+                                                htmlFor="night"
+                                                className={cn(
+                                                    "flex flex-col items-center justify-center rounded-xl border-2 p-4 cursor-pointer transition-all h-full text-center hover:bg-muted",
+                                                    field.value === "NIGHT" ? "border-primary bg-primary/5 shadow-inner" : "border-muted bg-transparent",
+                                                    isSlotDisabled("NIGHT") && "opacity-30 cursor-not-allowed grayscale"
+                                                )}
+                                            >
+                                                <span className="text-sm font-bold">Noche</span>
+                                                <span className="text-[10px] text-muted-foreground font-medium">8:00 PM - 7:00 AM</span>
+                                            </label>
+                                        </FormItem>
+                                    </RadioGroup>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Promo Switch */}
+                    <FormField
+                        control={form.control}
+                        name="isCouplePromo"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center justify-between rounded-xl border p-4 bg-muted/20">
+                                <div className="space-y-0.5">
+                                    <FormLabel className="text-base font-bold flex items-center gap-2">
+                                        Promo Pareja
+                                        <CheckCircle2 className="h-4 w-4 text-amber-500" />
+                                    </FormLabel>
+                                    <FormDescription className="text-[10px]">
+                                        Para escapadas románticas (2 personas)
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Personal Data */}
+                <div className="space-y-4 pt-4 border-t">
                     <FormField
                         control={form.control}
                         name="guestName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Nombre completo</FormLabel>
+                                <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Nombre completo</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Juan Pérez" {...field} />
+                                    <Input placeholder="Juan Pérez" className="rounded-xl h-11" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="guestWhatsapp"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>WhatsApp</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="11 1234 5678" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <FormField
+                            control={form.control}
+                            name="guestWhatsapp"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">WhatsApp</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="0981 123 456" className="rounded-xl h-11" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="guestEmail"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Email</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="juan@ejemplo.com" className="rounded-xl h-11" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
-                <FormField
-                    control={form.control}
-                    name="guestEmail"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input placeholder="juan@ejemplo.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                {/* Price Display */}
+                {totalPrice > 0 && (
+                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 flex justify-between items-center animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-2">
+                            <Info className="h-4 w-4 text-primary" />
+                            <span className="font-bold text-primary">Total a pagar:</span>
+                        </div>
+                        <span className="text-2xl font-black text-primary">
+                            {totalPrice.toLocaleString("es-PY")} gs
+                        </span>
+                    </div>
+                )}
 
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="w-full h-14 rounded-xl text-lg font-black shadow-lg shadow-primary/20" disabled={isPending || !watchDate}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isPending ? "Procesando..." : "Confirmar Reserva"}
                 </Button>

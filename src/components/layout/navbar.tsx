@@ -100,11 +100,6 @@ export function Navbar() {
                                                     <span className="text-xs text-muted-foreground">Luque - Paraguay</span>
                                                 </div>
                                             </SheetTitle>
-                                            <SheetClose asChild>
-                                                <Button variant="ghost" size="icon" className="rounded-full outline-amber-500">
-                                                    <X className="h-6 w-6" />
-                                                </Button>
-                                            </SheetClose>
                                         </div>
                                     </SheetHeader>
 

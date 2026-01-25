@@ -13,6 +13,11 @@ export const slotEnum = pgEnum("slot", [
     "NIGHT",
 ]);
 
+export const roleEnum = pgEnum("role", [
+    "ADMIN",
+    "STAFF",
+]);
+
 export const bookings = pgTable("bookings", {
     id: uuid("id").defaultRandom().primaryKey(),
     guestName: text("guest_name").notNull(),
@@ -33,4 +38,12 @@ export const bookings = pgTable("bookings", {
 export const settings = pgTable("settings", {
     key: text("key").primaryKey(), // e.g., 'price_per_night'
     value: text("value").notNull(), // JSON or String
+});
+
+export const users = pgTable("users", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    username: text("username").notNull().unique(),
+    password: text("password").notNull(),
+    role: roleEnum("role").notNull().default("ADMIN"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 });

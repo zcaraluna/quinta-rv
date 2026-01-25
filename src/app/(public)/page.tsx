@@ -6,7 +6,7 @@ export default async function Home() {
     return (
         <main className="min-h-screen bg-background flex flex-col items-center">
             {/* Header Section */}
-            <section className="w-full pt-32 sm:pt-40 pb-10 text-center px-4 max-w-4xl mx-auto">
+            <section className="w-full pt-20 sm:pt-32 pb-4 text-center px-4 max-w-4xl mx-auto">
                 <div className="space-y-1 mb-6">
                     <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-foreground leading-none">
                         Quinta RV
@@ -27,7 +27,7 @@ export default async function Home() {
             </section>
 
             {/* Photo Reel Section */}
-            <section className="w-full mt-10">
+            <section className="w-full -mt-2">
                 <PhotoReel />
             </section>
 

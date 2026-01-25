@@ -40,7 +40,6 @@ export default async function Home() {
 
                 {/* Right Side: Photo Reel */}
                 <div className="w-full max-w-sm lg:max-w-md mx-auto h-[500px] lg:h-[70vh] overflow-hidden rounded-[2.5rem] shadow-2xl border-2 border-white/50 relative animate-in fade-in slide-in-from-right-8 duration-1000">
-                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-background pointer-events-none" />
                     <PhotoReel direction="vertical" />
                 </div>
             </section>

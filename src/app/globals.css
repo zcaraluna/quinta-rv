@@ -175,7 +175,7 @@
 }
 
 .animate-marquee-vertical {
-  animation: marquee-v 80s linear infinite;
+  animation: marquee-v 150s linear infinite;
 }
 
 .animate-marquee-vertical:hover {
@@ -184,6 +184,6 @@
 
 @media (max-width: 640px) {
   .animate-marquee-vertical {
-    animation-duration: 50s;
+    animation-duration: 100s;
   }
 }

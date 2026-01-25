@@ -12,26 +12,26 @@ export default async function Home() {
                 {/* Left Side: Content */}
                 <div className="text-center lg:text-left space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
                     <div className="space-y-2">
-                        <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-foreground leading-none">
+                        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-foreground leading-none">
                             Quinta RV
                         </h1>
-                        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary italic tracking-tight">
+                        <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary italic tracking-tight">
                             Yukyry - Luque
                         </p>
                     </div>
 
                     <div className="space-y-1">
-                        <p className="text-xl sm:text-2xl text-muted-foreground font-medium balance leading-relaxed">
+                        <p className="text-lg sm:text-xl text-muted-foreground font-medium balance leading-relaxed">
                             Un lugar para divertirte con la familia y amigos.
                         </p>
-                        <p className="text-xl sm:text-2xl font-black text-primary/90 tracking-tight">
+                        <p className="text-lg sm:text-xl font-black text-primary/90 tracking-tight">
                             Somos pet friendly.
                         </p>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-2">
                         <Link href="/reservations">
-                            <Button size="lg" className="rounded-full px-12 h-16 font-black text-xl shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
+                            <Button size="lg" className="rounded-full px-10 h-14 font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
                                 Reservar Ahora
                             </Button>
                         </Link>
@@ -39,7 +39,7 @@ export default async function Home() {
                 </div>
 
                 {/* Right Side: Photo Reel */}
-                <div className="w-full h-[600px] lg:h-[80vh] overflow-hidden rounded-[3rem] shadow-2xl border-2 border-white/50 relative animate-in fade-in slide-in-from-right-8 duration-1000">
+                <div className="w-full max-w-sm lg:max-w-md mx-auto h-[500px] lg:h-[70vh] overflow-hidden rounded-[2.5rem] shadow-2xl border-2 border-white/50 relative animate-in fade-in slide-in-from-right-8 duration-1000">
                     <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-background pointer-events-none" />
                     <PhotoReel direction="vertical" />
                 </div>

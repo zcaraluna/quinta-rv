@@ -163,3 +163,27 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+@keyframes marquee-v {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee-vertical {
+  animation: marquee-v 80s linear infinite;
+}
+
+.animate-marquee-vertical:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 640px) {
+  .animate-marquee-vertical {
+    animation-duration: 50s;
+  }
+}

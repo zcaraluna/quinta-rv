@@ -37,7 +37,7 @@ const formSchema = z.object({
     dateRange: z.object({
         from: z.date(),
         to: z.date(),
-    }, { required_error: "Selecciona las fechas" }),
+    }),
 })
 
 interface BookingFormProps {

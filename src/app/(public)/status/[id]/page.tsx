@@ -33,99 +33,116 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
     const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
 
     return (
-        <main className="min-h-screen bg-muted/20 py-12 px-4 flex justify-center items-start">
-            <Card className="max-w-md w-full shadow-lg border-t-4 border-t-primary">
-                <CardHeader className="text-center">
+        <main className="min-h-screen bg-muted/20 pt-32 pb-20 px-4 flex justify-center items-start">
+            <Card className="max-w-md w-full shadow-2xl border-t-8 border-t-primary rounded-[2rem] overflow-hidden">
+                <CardHeader className="text-center pb-2">
                     <div className="mx-auto mb-4">
                         {isConfirmed ? (
-                            <CheckCircle2 className="w-16 h-16 text-green-500" />
+                            <CheckCircle2 className="w-20 h-20 text-green-500 animate-in zoom-in-50 duration-500" />
                         ) : showPayment ? (
-                            <Clock className="w-16 h-16 text-amber-500" />
+                            <Clock className="w-20 h-20 text-amber-500 animate-pulse" />
                         ) : (
-                            <AlertCircle className="w-16 h-16 text-destructive" />
+                            <AlertCircle className="w-20 h-20 text-destructive" />
                         )}
                     </div>
-                    <CardTitle>{isConfirmed ? "¡Reserva Confirmada!" : showPayment ? "Reserva Pendiente" : "Reserva Expirada"}</CardTitle>
-                    <CardDescription>ID: {booking.id.slice(0, 8)}</CardDescription>
+                    <CardTitle className="text-2xl font-black">{isConfirmed ? "¡Reserva Confirmada!" : showPayment ? "Reserva Pendiente" : "Reserva Expirada"}</CardTitle>
+                    <CardDescription className="font-mono text-xs">ID: {booking.id}</CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-6">
                     {/* Countdown Section */}
                     {showPayment && booking.expiresAt && (
-                        <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800 text-center space-y-2">
-                            <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">
+                        <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 text-center space-y-2 shadow-inner">
+                            <p className="text-xs text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest">
                                 Tu pre-reserva expira en:
                             </p>
                             <CountdownTimer targetDate={booking.expiresAt} />
                         </div>
                     )}
 
-                    {/* Confirmed QR Section */}
-                    {isConfirmed && (
-                        <div className="text-center space-y-4">
-                            <p className="text-sm text-muted-foreground">Presenta este código al ingresar</p>
-                            <BookingQRCode value={`https://casaquinta.app/admin/verify/${booking.id}`} />
-                        </div>
-                    )}
-
                     <div className="space-y-4">
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Fecha</span>
-                            <span className="font-bold">{formatDate(booking.bookingDate)}</span>
+                            <span className="text-muted-foreground font-medium">Fecha</span>
+                            <span className="font-black">{formatDate(booking.bookingDate)}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Horario</span>
-                            <Badge variant="secondary" className="font-bold">
-                                {booking.slot === 'DAY' ? "Día (9am - 6pm)" : "Noche (8pm - 7am)"}
+                            <span className="text-muted-foreground font-medium">Horario</span>
+                            <Badge variant="secondary" className="font-black px-3 rounded-full">
+                                {booking.slot === 'DAY' ? "Día (9:00 AM - 6:00 PM)" : "Noche (8:00 PM - 7:00 AM)"}
                             </Badge>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Tipo</span>
-                            <span className="font-medium text-xs">
-                                {booking.isCouplePromo === "true" ? "Promo Pareja (2 pers.)" : "General (Hasta 30 pers.)"}
+                            <span className="text-muted-foreground font-medium">Tipo</span>
+                            <span className="font-bold text-xs bg-muted px-2 py-1 rounded">
+                                {booking.isCouplePromo === "true" ? "PROMO PAREJA (2 PERS.)" : "GENERAL (HASTA 30 PERS.)"}
                             </span>
                         </div>
-                        <Separator />
+                        <Separator className="bg-muted-foreground/10" />
                         <div className="flex justify-between items-center">
-                            <span className="font-semibold">Total</span>
-                            <span className="text-xl font-bold text-primary">{formatCurrency(booking.totalPrice)}</span>
+                            <span className="font-bold text-muted-foreground">Total</span>
+                            <span className="text-2xl font-black text-primary">{formatCurrency(booking.totalPrice)}</span>
                         </div>
                     </div>
 
                     {/* Payment Info Section */}
                     {showPayment && (
-                        <div className="bg-muted p-4 rounded-lg space-y-2 text-sm border-l-4 border-l-primary">
-                            <p className="font-bold">Datos para Transferencia:</p>
-                            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                        <div className="bg-muted/50 p-5 rounded-2xl space-y-3 text-sm border-2 border-dashed border-muted-foreground/20">
+                            <p className="font-black uppercase text-[10px] text-muted-foreground tracking-tighter">Datos para Transferencia:</p>
+                            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
                                 <span className="text-muted-foreground">Titular:</span>
                                 <span className="font-bold">Evelin Vargas</span>
                                 <span className="text-muted-foreground">Alias (Cél):</span>
-                                <span className="font-mono font-bold">0982336705</span>
+                                <span className="font-mono font-black text-base">0982336705</span>
                             </div>
+                        </div>
+                    )}
+
+                    {/* QR Section - Always show for confirmed, or if requested by user for pending too? 
+                        The user asked specifically to put it below the button. I'll show it for confirmed people mainly or as a voucher.
+                        Actually, let's show it at the end.
+                    */}
+                    {isConfirmed && (
+                        <div className="text-center space-y-4 pt-4 border-t border-dashed">
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tu Pase de Entrada</p>
+                            <BookingQRCode value={`https://casaquinta-rv.vercel.app/admin/verify/${booking.id}`} id={booking.id} />
                         </div>
                     )}
                 </CardContent>
 
-                <CardFooter className="flex-col gap-3">
+                <CardFooter className="flex-col gap-3 pb-8">
                     {showPayment && (
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white" asChild>
-                            <a href={waLink} target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="mr-2 h-4 w-4" />
-                                Enviar Comprobante
-                            </a>
-                        </Button>
+                        <>
+                            <Button className="w-full h-14 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-green-200" asChild>
+                                <a href={waLink} target="_blank" rel="noopener noreferrer">
+                                    <MessageCircle className="mr-2 h-6 w-6" />
+                                    Enviar Comprobante
+                                </a>
+                            </Button>
+                            {/* User asked for Download QR below this button too if applicable? 
+                                Usually for pending we don't have the "entry QR", but I will provide a general one or wait.
+                                The user said "Abajo del botón de enviar comprobante, quiero que le des... descargar el código QR"
+                                So I will show the QR component here too for pending state but maybe with a "Pre-reserva" label.
+                            */}
+                            <div className="pt-4 w-full flex flex-col items-center gap-2">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">ID de Reserva Provisional</p>
+                                <BookingQRCode value={booking.id} id={booking.id} />
+                            </div>
+                        </>
                     )}
 
                     {isConfirmed && (
-                        <Button variant="outline" className="w-full" asChild>
+                        <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-2" asChild>
                             <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
-                                <MapPin className="mr-2 h-4 w-4" />
-                                Ver Ubicación
+                                <MapPin className="mr-2 h-5 w-5" />
+                                Ver Ubicación en Maps
                             </a>
                         </Button>
                     )}
                 </CardFooter>
             </Card>
         </main>
+    )
+            </Card >
+        </main >
     )
 }

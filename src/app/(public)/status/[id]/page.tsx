@@ -27,6 +27,8 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
     const showPayment = booking.status === 'PENDING_PAYMENT' && !isExpired;
     const isConfirmed = booking.status === 'CONFIRMED';
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+
     // WhatsApp Message Generator
     const waNumber = "595983145432"; // Correct format for 0983145432
     const waMessage = `Hola! Envío comprobante para la reserva ${booking.id.slice(0, 8)} a nombre de ${booking.guestName}.`;
@@ -105,7 +107,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                     {isConfirmed && (
                         <div className="text-center space-y-4 pt-4 border-t border-dashed">
                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tu Pase de Entrada</p>
-                            <BookingQRCode value={`https://casaquinta-rv.vercel.app/status/${booking.id}`} id={booking.id} />
+                            <BookingQRCode value={`${baseUrl}/status/${booking.id}`} id={booking.id} />
                         </div>
                     )}
                 </CardContent>
@@ -121,7 +123,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                             </Button>
                             <div className="pt-4 w-full flex flex-col items-center gap-2">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">ID de Reserva Provisional</p>
-                                <BookingQRCode value={`https://casaquinta-rv.vercel.app/status/${booking.id}`} id={booking.id} />
+                                <BookingQRCode value={`${baseUrl}/status/${booking.id}`} id={booking.id} />
                             </div>
                         </>
                     )}

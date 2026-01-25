@@ -142,7 +142,4 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
             </Card>
         </main>
     )
-            </Card >
-        </main >
-    )
 }

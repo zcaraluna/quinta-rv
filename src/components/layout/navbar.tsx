@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Menu, Home, Calendar, Sparkles, Users, LogIn, X } from "lucide-react"
+import { Menu, Home, Calendar, Sparkles, Users, LogIn, X, Tag } from "lucide-react"
 import {
     Sheet,
     SheetContent,
@@ -18,6 +18,7 @@ import { useState } from "react"
 
 const NAV_ITEMS = [
     { label: "Inicio", href: "/", icon: Home },
+    { label: "Tarifas", href: "/pricing", icon: Tag },
     { label: "Reservaciones", href: "/reservations", icon: Calendar },
     { label: "Amenities", href: "/amenities", icon: Sparkles },
     { label: "Sobre Nosotros", href: "/about", icon: Users },

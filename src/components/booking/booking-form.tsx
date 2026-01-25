@@ -33,13 +33,15 @@ import { createBooking } from "@/lib/actions"
 import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
-    guestName: z.string().min(2, { message: "Nombre muy corto" }),
-    guestEmail: z.string().email({ message: "Email inválido" }),
-    guestWhatsapp: z.string().min(8, { message: "Mínimo 8 dígitos" }),
-    bookingDate: z.date({ required_error: "Selecciona un día" }),
-    slot: z.enum(["DAY", "NIGHT"], { required_error: "Selecciona un horario" }),
-    isCouplePromo: z.boolean().default(false),
+    guestName: z.string().min(2, "Nombre muy corto"),
+    guestEmail: z.string().email("Email inválido"),
+    guestWhatsapp: z.string().min(8, "Mínimo 8 dígitos"),
+    bookingDate: z.date(),
+    slot: z.enum(["DAY", "NIGHT"]),
+    isCouplePromo: z.boolean(),
 })
+
+type FormValues = z.infer<typeof formSchema>
 
 interface BookingFormProps {
     unavailableSlots: { date: string; slot: string }[]
@@ -49,7 +51,7 @@ const PRICING = {
     GENERAL: {
         WEEKDAY: { DAY: 500000, NIGHT: 650000 },
         SATURDAY: { DAY: 700000, NIGHT: 800000 },
-        SUNDAY: { DAY: 800000, NIGHT: 650000 }, // Night as weekday or specific
+        SUNDAY: { DAY: 800000, NIGHT: 650000 },
     },
     COUPLE: {
         WEEKDAY: { DAY: 250000, NIGHT: 250000 },
@@ -61,7 +63,7 @@ const PRICING = {
 export function BookingForm({ unavailableSlots }: BookingFormProps) {
     const [isPending, startTransition] = React.useTransition()
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             guestName: "",

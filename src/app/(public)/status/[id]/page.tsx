@@ -70,17 +70,25 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
 
                     <div className="space-y-4">
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Entrada</span>
-                            <span className="font-medium">{formatDate(booking.startDate)}</span>
+                            <span className="text-muted-foreground">Fecha</span>
+                            <span className="font-bold">{formatDate(booking.bookingDate)}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Salida</span>
-                            <span className="font-medium">{formatDate(booking.endDate)}</span>
+                            <span className="text-muted-foreground">Horario</span>
+                            <Badge variant="secondary" className="font-bold">
+                                {booking.slot === 'DAY' ? "Día (9am - 6pm)" : "Noche (8pm - 7am)"}
+                            </Badge>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">Tipo</span>
+                            <span className="font-medium text-xs">
+                                {booking.isCouplePromo === "true" ? "Promo Pareja (2 pers.)" : "General (Hasta 30 pers.)"}
+                            </span>
                         </div>
                         <Separator />
                         <div className="flex justify-between items-center">
                             <span className="font-semibold">Total</span>
-                            <span className="text-xl font-bold">{formatCurrency(booking.totalPrice)}</span>
+                            <span className="text-xl font-bold text-primary">{formatCurrency(booking.totalPrice)}</span>
                         </div>
                     </div>
 

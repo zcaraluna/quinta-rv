@@ -137,7 +137,7 @@ export default function PricingPage() {
                 </div>
 
                 <div className="text-center">
-                    <Button size="xl" className="rounded-full px-12 h-16 text-xl font-black shadow-2xl hover:scale-105 transition-all" asChild>
+                    <Button size="lg" className="rounded-full px-12 h-16 text-xl font-black shadow-2xl hover:scale-105 transition-all" asChild>
                         <Link href="/reservations" className="flex items-center gap-3">
                             Quiero Reservar
                             <ArrowRight className="h-6 w-6" />

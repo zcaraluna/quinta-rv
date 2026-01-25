@@ -13,7 +13,7 @@ export function PhotoReel() {
           {[...IMAGES, ...IMAGES].map((src, index) => (
             <div
               key={index}
-              className="relative w-[200px] h-[280px] sm:w-[300px] sm:h-[400px] flex-shrink-0 overflow-hidden rounded-xl shadow-md border"
+              className="relative w-40 h-56 sm:w-64 sm:h-80 flex-shrink-0 overflow-hidden rounded-3xl shadow-lg border-4 border-white"
             >
               <Image
                 src={src}

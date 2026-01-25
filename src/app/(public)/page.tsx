@@ -7,36 +7,46 @@ import { Instagram, MapPin, Phone, Mail, Facebook } from "lucide-react";
 export default async function Home() {
     return (
         <main className="min-h-screen bg-background flex flex-col items-center">
-            {/* Header Section */}
-            <section className="w-full pt-32 sm:pt-40 pb-10 text-center px-4 max-w-4xl mx-auto">
-                <div className="space-y-1 mb-6">
-                    <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-foreground leading-none">
-                        Quinta RV
-                    </h1>
-                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-primary italic tracking-tight">
-                        Yukyry - Luque
-                    </p>
-                </div>
-                <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl mx-auto font-medium balance leading-relaxed px-4">
-                    Un lugar para divertirte con la familia y amigos.<br />
-                    <span className="text-primary/80 font-bold">Somos pet friendly.</span>
-                </p>
-                <div className="mt-10">
-                    <Link href="/reservations">
-                        <Button size="lg" className="rounded-full px-10 h-14 font-black text-lg shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95">
-                            Reservar Ahora
-                        </Button>
-                    </Link>
-                </div>
-            </section>
+            {/* Split Hero Section */}
+            <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[90vh]">
+                {/* Left Side: Content */}
+                <div className="text-center lg:text-left space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
+                    <div className="space-y-2">
+                        <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-foreground leading-none">
+                            Quinta RV
+                        </h1>
+                        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary italic tracking-tight">
+                            Yukyry - Luque
+                        </p>
+                    </div>
 
-            {/* Gallery Reel Section */}
-            <section className="w-full py-10">
-                <PhotoReel />
+                    <div className="space-y-1">
+                        <p className="text-xl sm:text-2xl text-muted-foreground font-medium balance leading-relaxed">
+                            Un lugar para divertirte con la familia y amigos.
+                        </p>
+                        <p className="text-xl sm:text-2xl font-black text-primary/90 tracking-tight">
+                            Somos pet friendly.
+                        </p>
+                    </div>
+
+                    <div className="pt-4">
+                        <Link href="/reservations">
+                            <Button size="lg" className="rounded-full px-12 h-16 font-black text-xl shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
+                                Reservar Ahora
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Right Side: Photo Reel */}
+                <div className="w-full h-[600px] lg:h-[80vh] overflow-hidden rounded-[3rem] shadow-2xl border-2 border-white/50 relative animate-in fade-in slide-in-from-right-8 duration-1000">
+                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-background pointer-events-none" />
+                    <PhotoReel direction="vertical" />
+                </div>
             </section>
 
             {/* Modern Footer */}
-            <footer className="w-full bg-muted/30 border-t mt-20 pt-20 pb-10">
+            <footer className="w-full bg-muted/30 border-t mt-12 pt-20 pb-10">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                         {/* Brand Column */}

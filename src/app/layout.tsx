@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   description: "Reserve your stay easily.",
 };
 
-import { Navbar } from "@/components/layout/navbar";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${raleway.className} antialiased`}>
-        <Navbar />
         {children}
       </body>
     </html>

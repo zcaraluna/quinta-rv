@@ -71,8 +71,19 @@ export default async function AdminLayout({
             <main className="flex-1 overflow-auto bg-muted/10">
                 <header className="h-16 bg-card border-b px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm md:shadow-none">
                     <h2 className="font-black tracking-tight text-lg">Quinta RV Dashboard</h2>
-                    <div className="flex items-center gap-4">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{new Date().toLocaleDateString('es-PY', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                    <div className="flex items-center gap-6">
+                        <span className="hidden sm:inline text-xs font-bold text-muted-foreground uppercase tracking-widest">{new Date().toLocaleDateString('es-PY', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                        <form
+                            action={async () => {
+                                "use server";
+                                await signOut();
+                            }}
+                        >
+                            <Button variant="outline" size="sm" className="rounded-full gap-2 border-destructive/20 text-destructive hover:bg-destructive/10 hover:text-destructive font-bold transition-all">
+                                <LogOut className="h-4 w-4" />
+                                <span className="hidden sm:inline">Salir</span>
+                            </Button>
+                        </form>
                     </div>
                 </header>
                 <div className="p-8">

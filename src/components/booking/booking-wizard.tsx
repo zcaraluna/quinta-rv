@@ -190,41 +190,14 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                 <p className="text-muted-foreground font-medium">Selecciona la fecha de tu preferencia en el calendario.</p>
                             </div>
 
-                            <Card className="p-8 lg:p-12 rounded-[3.5rem] border-none shadow-2xl bg-card overflow-hidden">
-                                <div className="flex flex-col lg:flex-row gap-12 items-start justify-center">
-                                    <div className="w-full lg:w-1/5 flex flex-col gap-8 h-full">
-                                        <div className="p-6 rounded-[2.5rem] bg-muted/30 grid grid-cols-1 gap-4 text-[10px] font-black uppercase tracking-widest">
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-emerald-500 shadow-sm" /> Disponible</div>
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-amber-400 shadow-sm" /> 1 Turno Libre</div>
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-red-500 shadow-sm" /> Agotado</div>
-                                        </div>
-
-                                        {watchDate && (
-                                            <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20 flex flex-col items-center">
-                                                <span className="text-xs font-black uppercase tracking-widest text-primary/60">Seleccionado</span>
-                                                <span className="text-2xl font-black tracking-tight mt-1 capitalize">
-                                                    {format(watchDate, "EEEE d 'de' MMMM", { locale: es })}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        <Button
-                                            size="lg"
-                                            className="w-full h-20 rounded-[2.5rem] text-xl font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-auto"
-                                            disabled={!watchDate}
-                                            onClick={nextStep}
-                                            type="button"
-                                        >
-                                            Siguiente <ChevronRight className="ml-2" />
-                                        </Button>
-                                    </div>
-
-                                    <div className="w-full lg:w-4/5 flex justify-center">
+                            <Card className="p-8 md:p-16 rounded-[3.5rem] border-none shadow-2xl bg-card overflow-hidden">
+                                <div className="flex flex-col items-center gap-12">
+                                    <div className="w-full max-w-4xl">
                                         <FormField
                                             control={form.control}
                                             name="bookingDate"
                                             render={({ field }) => (
-                                                <div className="w-full scale-100 md:scale-110 lg:scale-[1.2] origin-top transition-transform duration-500 py-4">
+                                                <div className="w-full scale-100 md:scale-110 lg:scale-[1.25] origin-top transition-transform duration-500 py-8">
                                                     <Calendar
                                                         mode="single"
                                                         selected={field.value}
@@ -232,22 +205,40 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                                         disabled={isDateDisabled}
                                                         className="w-full border-none shadow-none"
                                                         classNames={{
-                                                            month: "w-full space-y-8",
+                                                            month: "w-full space-y-12",
                                                             table: "w-full border-collapse",
-                                                            day: "h-14 w-full text-center text-xl md:text-2xl p-0 font-black",
-                                                            button: "h-auto w-full aspect-square rounded-[1.5rem] md:rounded-[2.5rem] hover:bg-muted transition-colors"
+                                                            day: "h-16 w-full text-center text-2xl md:text-3xl p-0 font-black",
+                                                            button: "h-auto w-full aspect-square rounded-[2rem] md:rounded-[2.5rem] hover:bg-muted transition-all duration-300"
                                                         }}
                                                         locale={es}
                                                         modifiers={modifiers}
                                                         modifiersClassNames={{
                                                             full: "bg-red-100 text-red-900 border-2 border-red-200 opacity-50 cursor-not-allowed",
-                                                            partial: "bg-amber-100 text-amber-900 border-2 border-amber-300",
-                                                            available: "bg-emerald-50 text-emerald-900 border border-emerald-100"
+                                                            partial: "bg-amber-100 text-amber-900 border-2 border-amber-300 shadow-lg shadow-amber-200/50",
+                                                            available: "bg-emerald-50 text-emerald-900 border border-emerald-100 shadow-md shadow-emerald-100/50"
                                                         }}
                                                     />
                                                 </div>
                                             )}
                                         />
+                                    </div>
+
+                                    <div className="w-full max-w-md space-y-8 mt-8 lg:mt-24 pb-8">
+                                        <div className="flex justify-center gap-8 py-6 px-10 rounded-[2.5rem] bg-muted/30 text-[10px] font-black uppercase tracking-widest border border-muted-foreground/5">
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-emerald-500 shadow-sm" /> Disponible</div>
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-amber-400 shadow-sm" /> 1 Libre</div>
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-red-500 shadow-sm" /> Agotado</div>
+                                        </div>
+
+                                        <Button
+                                            size="lg"
+                                            className="w-full h-24 rounded-[2.5rem] text-2xl font-black shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                            disabled={!watchDate}
+                                            onClick={nextStep}
+                                            type="button"
+                                        >
+                                            Continuar <ChevronRight className="ml-3" size={32} />
+                                        </Button>
                                     </div>
                                 </div>
                             </Card>

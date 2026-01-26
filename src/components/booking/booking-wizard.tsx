@@ -210,7 +210,7 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
 
                                         <Button
                                             size="lg"
-                                            className="w-full h-16 rounded-2xl text-lg font-black mt-auto"
+                                            className="w-full h-20 rounded-[2.5rem] text-xl font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-auto"
                                             disabled={!watchDate}
                                             onClick={nextStep}
                                             type="button"

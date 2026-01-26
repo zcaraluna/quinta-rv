@@ -116,7 +116,10 @@ export default async function Home() {
 
                     <div className="border-t pt-10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground font-medium uppercase tracking-widest">
                         <p>© 2026 Quinta RV - Luque. Todos los derechos reservados.</p>
-                        <p>Desarrollado con ❤️ para momentos inolvidables.</p>
+                        <p>
+                            Desarrollado por <a href="https://s1mple.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors font-black lowercase">s1mple.dev</a>,
+                            desplegado en <a href="https://s1mple.cloud" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors font-black lowercase">s1mple.cloud</a>
+                        </p>
                     </div>
                 </div>
             </footer>

@@ -356,14 +356,31 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
 
                 {/* Price Display */}
                 {totalPrice > 0 && (
-                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20 flex justify-between items-center animate-in zoom-in-95 duration-300">
-                        <div className="flex items-center gap-2">
-                            <Info className="h-4 w-4 text-primary" />
-                            <span className="font-bold text-primary">Total a pagar:</span>
+                    <div className="space-y-4 animate-in zoom-in-95 duration-300">
+                        <div className="p-5 bg-primary/10 rounded-2xl border border-primary/20 flex flex-col gap-3">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-muted-foreground text-sm uppercase tracking-widest">Monto Total:</span>
+                                </div>
+                                <span className="text-xl font-black text-foreground">
+                                    {formatCurrency(totalPrice)}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between items-center pt-3 border-t border-primary/10">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-primary" />
+                                    <span className="font-black text-primary uppercase text-sm tracking-widest">Seña para confirmar (50%):</span>
+                                </div>
+                                <span className="text-2xl font-black text-primary">
+                                    {formatCurrency(totalPrice * 0.5)}
+                                </span>
+                            </div>
+
+                            <p className="text-[10px] text-muted-foreground font-medium italic text-center mt-2 leading-tight">
+                                Para asegurar tu reserva, debes realizar el pago de la seña en un plazo no mayor a 4 horas.
+                            </p>
                         </div>
-                        <span className="text-2xl font-black text-primary">
-                            {formatCurrency(totalPrice)}
-                        </span>
                     </div>
                 )}
 

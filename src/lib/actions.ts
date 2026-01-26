@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
 import { and, gte, lte, or, eq, sql } from 'drizzle-orm';
 
-const PRICING = {
+const DEFAULT_PRICING = {
     GENERAL: {
         WEEKDAY: { DAY: 500000, NIGHT: 650000 },
         SATURDAY: { DAY: 700000, NIGHT: 800000 },
@@ -18,6 +18,21 @@ const PRICING = {
         WEEKDAY: { DAY: 250000, NIGHT: 250000 },
         SATURDAY: { DAY: 300000, NIGHT: 400000 },
         SUNDAY: { DAY: 400000, NIGHT: 300000 },
+    }
+}
+
+export async function getPricingConfig() {
+    const [configSetting] = await db.select()
+        .from(settings)
+        .where(eq(settings.key, 'pricing_config'));
+
+    if (!configSetting) return DEFAULT_PRICING;
+
+    try {
+        return JSON.parse(configSetting.value);
+    } catch (e) {
+        console.error("Error parsing pricing_config:", e);
+        return DEFAULT_PRICING;
     }
 }
 
@@ -74,6 +89,7 @@ export async function createBooking(prevState: any, formData: FormData) {
     if (dayOfWeek === 6) dayType = "SATURDAY";
     else if (dayOfWeek === 0) dayType = "SUNDAY";
 
+    const PRICING = await getPricingConfig();
     const price = PRICING[type][dayType][slot];
     const expiresAt = addHours(new Date(), 4);
 

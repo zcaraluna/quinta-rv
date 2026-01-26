@@ -2,14 +2,16 @@ import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
 import { sql, count, sum, eq, gte, and } from "drizzle-orm";
 import {
-    Users,
     CalendarRange,
     CreditCard,
     TrendingUp,
+    Users,
     Clock,
     CheckCircle2,
-    XCircle
+    XCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { desc } from "drizzle-orm";
 import {
     Card,
     CardContent,
@@ -37,6 +39,12 @@ export default async function AdminDashboard() {
 
     const revenueValue = parseFloat(revenue.value || "0");
 
+    // Fetch recent bookings
+    const recentBookings = await db.select()
+        .from(bookings)
+        .orderBy(desc(bookings.createdAt))
+        .limit(5);
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-2">
@@ -60,7 +68,7 @@ export default async function AdminDashboard() {
                 />
                 <StatCard
                     title="Ventas del Mes"
-                    value={formatCurrency(revenueValue)}
+                    value={revenueValue === 0 ? "G. 0" : formatCurrency(revenueValue)}
                     icon={<CreditCard className="text-emerald-500" />}
                     description="Solo confirmadas"
                 />
@@ -72,40 +80,49 @@ export default async function AdminDashboard() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20">
-                    <CardHeader>
+            <div className="grid grid-cols-1 gap-8">
+                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20 overflow-hidden">
+                    <CardHeader className="border-b bg-muted/30">
                         <CardTitle className="font-black tracking-tight flex items-center gap-2">
                             <TrendingUp className="h-5 w-5 text-primary" />
                             Actividad Reciente
                         </CardTitle>
                         <CardDescription>Ultimas reservas realizadas en el sistema.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground font-medium py-10 text-center italic">
-                            Pronto: Gráfico de reservas y listado detallado aquí.
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20">
-                    <CardHeader>
-                        <CardTitle className="font-black tracking-tight flex items-center gap-2">
-                            <Users className="h-5 w-5 text-primary" />
-                            Visitantes
-                        </CardTitle>
-                        <CardDescription>Tráfico y engagement de los clientes.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10 flex flex-col items-center">
-                                <span className="text-3xl font-black tracking-tighter text-primary">Pet Friendly</span>
-                                <span className="text-xs font-bold uppercase tracking-widest text-primary/60 mt-2 text-center leading-tight">Mascotas Bienvenidas</span>
-                            </div>
-                            <div className="p-6 rounded-3xl bg-muted/30 border flex flex-col items-center">
-                                <span className="text-3xl font-black tracking-tighter">Parejas</span>
-                                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-2 text-center leading-tight">Promo Parejas</span>
-                            </div>
+                    <CardContent className="p-0">
+                        <div className="divide-y">
+                            {recentBookings.length === 0 ? (
+                                <div className="py-12 text-center text-muted-foreground font-medium italic">
+                                    No hay actividad reciente para mostrar.
+                                </div>
+                            ) : (
+                                recentBookings.map((booking) => (
+                                    <div key={booking.id} className="p-6 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                                                {booking.guestName[0].toUpperCase()}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm">{booking.guestName}</span>
+                                                <span className="text-xs text-muted-foreground">
+                                                    {booking.isCouplePromo === "true" ? "Promo Pareja" : "General"} • {booking.slot === 'DAY' ? 'Día' : 'Noche'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-1">
+                                            <span className="text-sm font-black">{formatCurrency(Number(booking.totalPrice))}</span>
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest",
+                                                booking.status === 'CONFIRMED' ? "bg-emerald-100 text-emerald-700" :
+                                                    booking.status === 'PENDING_PAYMENT' ? "bg-amber-100 text-amber-700" :
+                                                        "bg-muted text-muted-foreground"
+                                            )}>
+                                                {booking.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>

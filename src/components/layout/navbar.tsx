@@ -21,7 +21,6 @@ const NAV_ITEMS = [
     { label: "Tarifas", href: "/pricing", icon: Tag },
     { label: "Reservaciones", href: "/reservations", icon: Calendar },
     { label: "Amenities", href: "/amenities", icon: Sparkles },
-    { label: "Sobre Nosotros", href: "/about", icon: Users },
 ]
 
 export function Navbar({ session }: { session?: any }) {

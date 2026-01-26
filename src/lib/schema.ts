@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, decimal, uuid, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, decimal, uuid, pgEnum, boolean } from "drizzle-orm/pg-core";
 
 export const statusEnum = pgEnum("status", [
     "PENDING_PAYMENT",
@@ -45,5 +45,6 @@ export const users = pgTable("users", {
     username: text("username").notNull().unique(),
     password: text("password").notNull(),
     role: roleEnum("role").notNull().default("ADMIN"),
+    requiresPasswordChange: boolean("requires_password_change").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });

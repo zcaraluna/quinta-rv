@@ -18,9 +18,9 @@ import { useState } from "react"
 
 const NAV_ITEMS = [
     { label: "Inicio", href: "/", icon: Home },
-    { label: "Tarifas", href: "/pricing", icon: Tag },
-    { label: "Reservaciones", href: "/reservations", icon: Calendar },
-    { label: "Amenities", href: "/amenities", icon: Sparkles },
+    { label: "Tarifas", href: "/tarifas", icon: Tag },
+    { label: "Reservar", href: "/reservar", icon: Calendar },
+    { label: "Comodidades", href: "/comodidades", icon: Sparkles },
 ]
 
 export function Navbar({ session }: { session?: any }) {

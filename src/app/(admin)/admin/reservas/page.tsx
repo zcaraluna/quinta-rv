@@ -84,7 +84,7 @@ export default async function BookingsPage({
                     <p className="text-muted-foreground font-medium text-sm sm:text-base">Gestiona y filtra todas las solicitudes de la quinta.</p>
                 </div>
                 <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20">
-                    <Link href="/admin/bookings/new">
+                    <Link href="/admin/reservas/nuevo">
                         <Plus className="mr-2 h-5 w-5" /> Nueva Reserva
                     </Link>
                 </Button>

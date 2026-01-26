@@ -76,7 +76,7 @@ export function ManualBookingForm() {
             const result = await createManualBooking(formData);
             if (result.success) {
                 toast.success("Reserva creada exitosamente");
-                router.push("/admin/bookings");
+                router.push("/admin/reservas");
                 router.refresh();
             } else {
                 toast.error("Error al crear la reserva");

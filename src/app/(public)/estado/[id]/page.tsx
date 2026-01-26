@@ -114,7 +114,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                     {isConfirmed && (
                         <div className="text-center space-y-4 pt-4 border-t border-dashed">
                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tu Pase de Entrada</p>
-                            <BookingQRCode value={`${baseUrl}/status/${booking.id}`} id={booking.id} />
+                            <BookingQRCode value={`${baseUrl}/estado/${booking.id}`} id={booking.id} />
                         </div>
                     )}
                 </CardContent>
@@ -130,7 +130,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                             </Button>
                             <div className="pt-4 w-full flex flex-col items-center gap-2">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">ID de Reserva Provisional</p>
-                                <BookingQRCode value={`${baseUrl}/status/${booking.id}`} id={booking.id} />
+                                <BookingQRCode value={`${baseUrl}/estado/${booking.id}`} id={booking.id} />
                             </div>
                         </>
                     )}

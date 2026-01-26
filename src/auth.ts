@@ -47,6 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.id = user.id as string;
                 token.username = user.username as string;
                 token.role = user.role as string;
+                token.requiresPasswordChange = (user as any).requiresPasswordChange as boolean;
             }
             return token;
         },
@@ -55,15 +56,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.id = token.id as string;
                 session.user.username = token.username as string;
                 session.user.role = token.role as string;
+                (session.user as any).requiresPasswordChange = token.requiresPasswordChange as boolean;
             }
             return session;
         },
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
+            const requiresPasswordChange = (auth?.user as any)?.requiresPasswordChange;
             const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+            const isChangingPassword = nextUrl.pathname === "/admin/cambiar-contrasena";
+
             if (isOnAdmin) {
-                if (isLoggedIn) return true;
-                return false; // Redirect unauthenticated users to login page
+                if (!isLoggedIn) return false;
+                if (requiresPasswordChange && !isChangingPassword) {
+                    return Response.redirect(new URL("/admin/cambiar-contrasena", nextUrl));
+                }
+                return true;
             }
             return true;
         },

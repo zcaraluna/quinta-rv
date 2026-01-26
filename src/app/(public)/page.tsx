@@ -30,7 +30,7 @@ export default async function Home() {
                     </div>
 
                     <div className="pt-2">
-                        <Link href="/reservations">
+                        <Link href="/reservar">
                             <Button size="lg" className="rounded-full px-10 h-14 font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
                                 Reservar Ahora
                             </Button>
@@ -75,9 +75,9 @@ export default async function Home() {
                             <h3 className="font-black text-sm uppercase tracking-widest text-foreground">Explora</h3>
                             <ul className="space-y-3 text-sm text-muted-foreground font-medium">
                                 <li><Link href="/" className="hover:text-primary transition-colors">Inicio</Link></li>
-                                <li><Link href="/amenities" className="hover:text-primary transition-colors">Instalaciones</Link></li>
-                                <li><Link href="/pricing" className="hover:text-primary transition-colors">Tarifas</Link></li>
-                                <li><Link href="/reservations" className="hover:text-primary transition-colors">Reservar</Link></li>
+                                <li><Link href="/comodidades" className="hover:text-primary transition-colors">Instalaciones</Link></li>
+                                <li><Link href="/tarifas" className="hover:text-primary transition-colors">Tarifas</Link></li>
+                                <li><Link href="/reservar" className="hover:text-primary transition-colors">Reservar</Link></li>
                             </ul>
                         </div>
 

@@ -93,6 +93,35 @@ export async function createBooking(prevState: any, formData: FormData) {
     redirect(`/status/${newBooking.id}`);
 }
 
+export async function createManualBooking(formData: FormData) {
+    const rawData = {
+        guestName: formData.get('guestName'),
+        guestEmail: formData.get('guestEmail'),
+        guestWhatsapp: formData.get('guestWhatsapp'),
+        bookingDate: new Date(formData.get('bookingDate') as string),
+        slot: formData.get('slot'),
+        isCouplePromo: formData.get('isCouplePromo') === "true",
+        totalPrice: formData.get('totalPrice'),
+        status: formData.get('status') || 'CONFIRMED',
+    };
+
+    const { guestName, guestEmail, guestWhatsapp, bookingDate, slot, isCouplePromo, totalPrice, status } = rawData as any;
+
+    await db.insert(bookings).values({
+        guestName,
+        guestEmail,
+        guestWhatsapp,
+        bookingDate: startOfDay(bookingDate),
+        slot,
+        isCouplePromo: isCouplePromo.toString(),
+        totalPrice: totalPrice.toString(),
+        status,
+    });
+
+    revalidatePath('/admin/bookings');
+    return { success: true };
+}
+
 export async function getUnavailableSlots() {
     const activeBookings = await db.select({
         date: bookings.bookingDate,

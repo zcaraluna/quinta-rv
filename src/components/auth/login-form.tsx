@@ -23,7 +23,7 @@ export function LoginForm() {
                         <Input
                             id="username"
                             name="username"
-                            placeholder="admin"
+                            placeholder="Nombre de usuario"
                             required
                             className="pl-10 h-12 rounded-xl focus:ring-primary/20"
                         />
@@ -37,6 +37,7 @@ export function LoginForm() {
                             id="password"
                             name="password"
                             type="password"
+                            placeholder="••••••••"
                             required
                             className="pl-10 h-12 rounded-xl focus:ring-primary/20"
                         />

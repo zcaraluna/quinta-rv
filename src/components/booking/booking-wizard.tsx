@@ -165,7 +165,7 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
     }
 
     return (
-        <div className="max-w-4xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
             {/* Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4">
@@ -190,8 +190,8 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                 <p className="text-muted-foreground font-medium">Selecciona la fecha de tu preferencia en el calendario.</p>
                             </div>
 
-                            <Card className="p-8 rounded-[2.5rem] border-none shadow-2xl bg-card overflow-hidden">
-                                <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
+                            <Card className="p-8 lg:p-12 rounded-[3.5rem] border-none shadow-2xl bg-card overflow-hidden">
+                                <div className="flex flex-col lg:flex-row gap-12 items-start justify-center">
                                     <div className="w-full max-w-sm flex flex-col gap-6">
                                         <div className="p-4 rounded-3xl bg-muted/30 grid grid-cols-1 gap-3 text-xs font-bold uppercase tracking-widest">
                                             <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Disponible</div>
@@ -219,31 +219,33 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                         </Button>
                                     </div>
 
-                                    <div className="flex-1 flex justify-center">
+                                    <div className="w-full lg:w-4/5 flex justify-center">
                                         <FormField
                                             control={form.control}
                                             name="bookingDate"
                                             render={({ field }) => (
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={isDateDisabled}
-                                                    className="w-full border-none shadow-none"
-                                                    classNames={{
-                                                        month: "w-full space-y-4",
-                                                        table: "w-full border-collapse",
-                                                        day: "h-14 w-full text-center text-lg p-0 font-bold",
-                                                        button: "h-12 w-12 rounded-2xl hover:bg-muted"
-                                                    }}
-                                                    locale={es}
-                                                    modifiers={modifiers}
-                                                    modifiersClassNames={{
-                                                        full: "bg-red-100 text-red-900 border-2 border-red-200 opacity-50 cursor-not-allowed",
-                                                        partial: "bg-amber-100 text-amber-900 border-2 border-amber-300",
-                                                        available: "bg-emerald-50 text-emerald-900 border border-emerald-100"
-                                                    }}
-                                                />
+                                                <div className="w-full scale-100 md:scale-110 lg:scale-[1.2] origin-top transition-transform duration-500 py-4">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        disabled={isDateDisabled}
+                                                        className="w-full border-none shadow-none"
+                                                        classNames={{
+                                                            month: "w-full space-y-8",
+                                                            table: "w-full border-collapse",
+                                                            day: "h-14 w-full text-center text-xl md:text-2xl p-0 font-black",
+                                                            button: "h-auto w-full aspect-square rounded-[1.5rem] md:rounded-[2.5rem] hover:bg-muted transition-colors"
+                                                        }}
+                                                        locale={es}
+                                                        modifiers={modifiers}
+                                                        modifiersClassNames={{
+                                                            full: "bg-red-100 text-red-900 border-2 border-red-200 opacity-50 cursor-not-allowed",
+                                                            partial: "bg-amber-100 text-amber-900 border-2 border-amber-300",
+                                                            available: "bg-emerald-50 text-emerald-900 border border-emerald-100"
+                                                        }}
+                                                    />
+                                                </div>
                                             )}
                                         />
                                     </div>
@@ -326,42 +328,43 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                     control={form.control}
                                     name="isCouplePromo"
                                     render={({ field }) => (
-                                        <Card className={cn(
-                                            "p-8 rounded-[2.5rem] border-4 transition-all duration-500 flex flex-col items-center gap-6",
-                                            field.value ? "border-amber-400 bg-amber-50 shadow-xl shadow-amber-200/50" : "border-muted bg-card"
-                                        )}>
-                                            <div className={cn("p-6 rounded-3xl", field.value ? "bg-amber-100" : "bg-muted")}>
-                                                <Users size={40} className={field.value ? "text-amber-600" : "text-muted-foreground"} />
-                                            </div>
-                                            <div className="text-center space-y-2">
-                                                <h3 className="text-2xl font-black tracking-tight">Promo Pareja</h3>
-                                                <p className="max-w-xs text-sm text-muted-foreground font-medium">
-                                                    Precio reducido para 2 personas máximo. Ideal para momentos románticos.
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center gap-4 bg-background px-6 py-3 rounded-2xl border shadow-sm">
-                                                <span className="text-sm font-black uppercase tracking-widest">¿Activar?</span>
-                                                <FormControl>
-                                                    <Switch
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange}
-                                                        className="data-[state=checked]:bg-amber-500"
-                                                    />
-                                                </FormControl>
-                                            </div>
-                                        </Card>
+                                        <RadioGroup
+                                            onValueChange={(val) => field.onChange(val === "COUPLE")}
+                                            defaultValue={field.value ? "COUPLE" : "NORMAL"}
+                                            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                                        >
+                                            <label
+                                                htmlFor="normal-booking"
+                                                className={cn(
+                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
+                                                    !field.value ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" : "border-muted bg-card hover:border-muted-foreground/20"
+                                                )}
+                                            >
+                                                <RadioGroupItem value="NORMAL" id="normal-booking" className="sr-only" />
+                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", !field.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
+                                                    <Users size={32} />
+                                                </div>
+                                                <span className="text-2xl font-black tracking-tight">Normal</span>
+                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">Capacidad Máx: 30 Personas</span>
+                                            </label>
+
+                                            <label
+                                                htmlFor="couple-booking"
+                                                className={cn(
+                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
+                                                    field.value ? "border-amber-500 bg-amber-50 shadow-xl shadow-amber-200/50" : "border-muted bg-card hover:border-muted-foreground/20"
+                                                )}
+                                            >
+                                                <RadioGroupItem value="COUPLE" id="couple-booking" className="sr-only" />
+                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
+                                                    <Users size={32} />
+                                                </div>
+                                                <span className="text-2xl font-black tracking-tight">Promo Pareja</span>
+                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">Capacidad Máx: 2 Personas</span>
+                                            </label>
+                                        </RadioGroup>
                                     )}
                                 />
-
-                                {!watchCouple && (
-                                    <div className="p-6 rounded-3xl bg-blue-50 border border-blue-100 flex items-start gap-4">
-                                        <div className="mt-1"><Info className="text-blue-500" size={20} /></div>
-                                        <div className="space-y-1">
-                                            <span className="font-black text-blue-900 uppercase text-xs tracking-widest leading-none">Reservación Normal</span>
-                                            <p className="text-blue-800 text-sm font-medium">Capacidad máxima: Hasta 30 personas permitidas en el recinto.</p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="flex justify-between items-center max-w-2xl mx-auto pt-8">

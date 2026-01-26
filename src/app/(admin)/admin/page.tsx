@@ -22,14 +22,22 @@ import { formatCurrency } from "@/lib/utils";
 import { startOfMonth } from "date-fns";
 
 export default async function AdminDashboard() {
-    // Fetch summary stats
-    const [totalBookings] = await db.select({ value: count() }).from(bookings).where(isNull(bookings.deletedAt));
-    const [pendingPayments] = await db.select({ value: count() }).from(bookings).where(and(eq(bookings.status, "PENDING_PAYMENT"), isNull(bookings.deletedAt)));
-    const [confirmedBookings] = await db.select({ value: count() }).from(bookings).where(and(eq(bookings.status, "CONFIRMED"), isNull(bookings.deletedAt)));
-
     const thisMonthStart = startOfMonth(new Date());
 
-    // Use sql for sum to be more robust
+    // Fetch summary stats (Excluding MAINTENANCE)
+    const [totalBookings] = await db.select({ value: count() })
+        .from(bookings)
+        .where(and(isNull(bookings.deletedAt), sql`${bookings.status} != 'MAINTENANCE'`));
+
+    const [pendingPayments] = await db.select({ value: count() })
+        .from(bookings)
+        .where(and(eq(bookings.status, "PENDING_PAYMENT"), isNull(bookings.deletedAt)));
+
+    const [confirmedBookings] = await db.select({ value: count() })
+        .from(bookings)
+        .where(and(eq(bookings.status, "CONFIRMED"), isNull(bookings.deletedAt)));
+
+    // Monthly Revenue (Only Confirmed, excluding Maintenance is implicit as maintenance price is 0, but good to be explicit)
     const [revenue] = await db.select({
         value: sql<string>`sum(${bookings.totalPrice})`
     })
@@ -42,10 +50,33 @@ export default async function AdminDashboard() {
 
     const revenueValue = parseFloat(revenue.value || "0");
 
-    // Fetch recent bookings
+    // Fetch monthly breakdown (Excluding MAINTENANCE)
+    const monthlyStats = await db.select({
+        slot: bookings.slot,
+        status: bookings.status,
+        count: count()
+    })
+        .from(bookings)
+        .where(and(
+            gte(bookings.createdAt, thisMonthStart),
+            isNull(bookings.deletedAt),
+            sql`${bookings.status} != 'MAINTENANCE'`
+        ))
+        .groupBy(bookings.slot, bookings.status);
+
+    const monthTotal = monthlyStats.reduce((acc, s) => acc + s.count, 0);
+    const monthDay = monthlyStats.reduce((acc, s) => s.slot === 'DAY' ? acc + s.count : acc, 0);
+    const monthNight = monthlyStats.reduce((acc, s) => s.slot === 'NIGHT' ? acc + s.count : acc, 0);
+    const monthCompleted = monthlyStats.reduce((acc, s) => s.status === 'COMPLETED' ? acc + s.count : acc, 0);
+    const monthIncomplete = monthTotal - monthCompleted;
+
+    // Fetch recent bookings (Excluding MAINTENANCE)
     const recentBookings = await db.select()
         .from(bookings)
-        .where(isNull(bookings.deletedAt))
+        .where(and(
+            isNull(bookings.deletedAt),
+            sql`${bookings.status} != 'MAINTENANCE'`
+        ))
         .orderBy(desc(bookings.createdAt))
         .limit(5);
 
@@ -62,7 +93,7 @@ export default async function AdminDashboard() {
                     title="Total Reservas"
                     value={totalBookings.value.toString()}
                     icon={<CalendarRange className="text-primary" />}
-                    description="Historial acumulado"
+                    description="Excluyendo mantenimiento"
                 />
                 <StatCard
                     title="Pendientes Pago"
@@ -84,19 +115,20 @@ export default async function AdminDashboard() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 gap-8">
-                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Recent Activity */}
+                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20 overflow-hidden flex flex-col">
                     <CardHeader className="border-b bg-muted/30">
                         <CardTitle className="font-black tracking-tight flex items-center gap-2">
                             <TrendingUp className="h-5 w-5 text-primary" />
                             Actividad Reciente
                         </CardTitle>
-                        <CardDescription>Ultimas reservas realizadas en el sistema.</CardDescription>
+                        <CardDescription>Ultimas reservas realizadas en el sistema (sin mantenimientos).</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0">
-                        <div className="divide-y">
+                    <CardContent className="p-0 flex-1">
+                        <div className="divide-y h-full">
                             {recentBookings.length === 0 ? (
-                                <div className="py-12 text-center text-muted-foreground font-medium italic">
+                                <div className="py-24 text-center text-muted-foreground font-medium italic">
                                     No hay actividad reciente para mostrar.
                                 </div>
                             ) : (
@@ -127,6 +159,60 @@ export default async function AdminDashboard() {
                                     </div>
                                 ))
                             )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Monthly Statistics Card */}
+                <Card className="rounded-[2rem] border-none shadow-xl shadow-muted/20 overflow-hidden">
+                    <CardHeader className="border-b bg-primary/5">
+                        <CardTitle className="font-black tracking-tight flex items-center gap-2">
+                            <CalendarRange className="h-5 w-5 text-primary" />
+                            Reservas este Mes
+                        </CardTitle>
+                        <CardDescription>Resumen detallado del periodo actual.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8 space-y-8">
+                        <div className="flex flex-col items-center justify-center py-6 bg-muted/20 rounded-[2.5rem] border border-dashed">
+                            <span className="text-6xl font-black tracking-tighter text-primary">{monthTotal}</span>
+                            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground mt-2">Total Reservas</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-6 rounded-[2rem] bg-background border shadow-sm space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Por Turno</p>
+                                <div className="flex justify-between items-end">
+                                    <div className="flex flex-col">
+                                        <span className="text-2xl font-black">{monthDay}</span>
+                                        <span className="text-[10px] font-bold text-primary italic">Día</span>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-2xl font-black">{monthNight}</span>
+                                        <span className="text-[10px] font-bold text-blue-600 italic">Noche</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 rounded-[2rem] bg-background border shadow-sm space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estado</p>
+                                <div className="flex justify-between items-end">
+                                    <div className="flex flex-col">
+                                        <span className="text-2xl font-black text-emerald-600">{monthCompleted}</span>
+                                        <span className="text-[10px] font-bold italic">Hechas</span>
+                                    </div>
+                                    <div className="flex flex-col items-end text-amber-600">
+                                        <span className="text-2xl font-black">{monthIncomplete}</span>
+                                        <span className="text-[10px] font-bold italic">Pendientes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-primary/5 rounded-2xl flex items-center gap-3">
+                            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                            <p className="text-[11px] font-bold text-primary/80 uppercase tracking-widest">
+                                Reporte actualizado en tiempo real
+                            </p>
                         </div>
                     </CardContent>
                 </Card>

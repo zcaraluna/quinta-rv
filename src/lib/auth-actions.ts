@@ -11,16 +11,34 @@ export async function authenticate(
     formData: FormData
 ) {
     try {
-        await signIn("credentials", formData);
+        const username = formData.get("username") as string;
+        const password = formData.get("password") as string;
+
+        console.log("Authenticating user action for:", username);
+
+        await signIn("credentials", {
+            username,
+            password,
+            redirectTo: "/admin",
+        });
     } catch (error) {
         if (error instanceof AuthError) {
+            console.error("Auth Error Type in Action:", error.type);
             switch (error.type) {
                 case "CredentialsSignin":
                     return "Credenciales inválidas.";
                 default:
-                    return "Algo salió mal.";
+                    return "Error de autenticación: " + error.type;
             }
         }
+
+        // Next.js internal redirect error - MUST rethrow
+        if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+            console.log("Redirecting to admin...");
+            throw error;
+        }
+
+        console.error("Non-Auth Error in Action:", error);
         throw error;
     }
 }

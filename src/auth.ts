@@ -8,7 +8,12 @@ import { z } from "zod";
 export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
+            credentials: {
+                username: { label: "Username", type: "text" },
+                password: { label: "Password", type: "password" }
+            },
             async authorize(credentials) {
+                console.log("Authorize attempt in callback:", credentials?.username);
                 const parsedCredentials = z
                     .object({ username: z.string(), password: z.string().min(6) })
                     .safeParse(credentials);
@@ -17,15 +22,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     const { username, password } = parsedCredentials.data;
                     const [user] = await db.select().from(users).where(eq(users.username, username));
 
-                    if (!user) return null;
+                    if (!user) {
+                        console.log("User not found in DB");
+                        return null;
+                    }
 
-                    // For initial setup/simplicity, we'll use a direct comparison if hashing isn't ready
-                    // But ideally: const passwordsMatch = await bcrypt.compare(password, user.password);
                     const passwordsMatch = password === user.password;
+                    console.log("Password match:", passwordsMatch);
 
                     if (passwordsMatch) return user;
                 }
 
+                console.log("Invalid credentials or parsing failed");
                 return null;
             },
         }),

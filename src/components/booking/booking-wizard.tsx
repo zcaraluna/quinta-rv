@@ -17,7 +17,10 @@ import {
     Loader2,
     Info,
     Smartphone,
-    Mail
+    Mail,
+    Sun,
+    Moon,
+    Heart
 } from "lucide-react"
 
 import { cn, formatCurrency } from "@/lib/utils"
@@ -47,9 +50,9 @@ import {
 } from "@/components/ui/dialog"
 
 const formSchema = z.object({
-    guestName: z.string().min(2, "Nombre muy corto"),
-    guestEmail: z.string().email("Email inválido"),
-    guestWhatsapp: z.string().min(8, "Mínimo 8 dígitos"),
+    guestName: z.string().min(2, "El nombre es obligatorio"),
+    guestEmail: z.string().email("Email inválido o vacío"),
+    guestWhatsapp: z.string().min(8, "El WhatsApp es obligatorio"),
     bookingDate: z.date(),
     slot: z.enum(["DAY", "NIGHT"]),
     isCouplePromo: z.boolean(),
@@ -79,6 +82,8 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
     const [currentMonth, setCurrentMonth] = React.useState(new Date())
     const [isPending, startTransition] = React.useTransition()
     const [isLegendOpen, setIsLegendOpen] = React.useState(false)
+    const [isFullDayAlertOpen, setIsFullDayAlertOpen] = React.useState(false)
+    const [isConfirmationInfoOpen, setIsConfirmationInfoOpen] = React.useState(false)
 
     React.useEffect(() => {
         const timer = setTimeout(() => setIsLegendOpen(true), 800)
@@ -195,6 +200,107 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    {/* MODALS */}
+                    <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
+                        <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-8">
+                            <DialogHeader className="mb-6">
+                                <DialogTitle className="text-3xl font-black tracking-tighter text-center">Leyenda de Disponibilidad</DialogTitle>
+                                <DialogDescription className="text-center text-muted-foreground font-medium pt-2">
+                                    Colores y estados de las fechas en nuestro calendario.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4">
+                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
+                                    <div className="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 shrink-0" />
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-black uppercase tracking-widest text-emerald-700">Disponible</span>
+                                        <span className="text-xs font-bold text-emerald-600/60 leading-tight">Día y Noche totalmente libres para reservar</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-amber-400/5 border border-amber-400/10">
+                                    <div className="w-6 h-6 rounded-full bg-amber-400 shadow-lg shadow-amber-400/50 shrink-0" />
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-black uppercase tracking-widest text-amber-700">Parcial</span>
+                                        <span className="text-xs font-bold text-amber-600/60 leading-tight">Solo queda 1 turno libre (Día o Noche)</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-red-500/5 border border-red-500/10">
+                                    <div className="w-6 h-6 rounded-full bg-red-500 shadow-lg shadow-red-500/50 shrink-0" />
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-black uppercase tracking-widest text-red-700">Ocupado</span>
+                                        <span className="text-xs font-bold text-red-600/60 leading-tight">Ambos turnos están reservados</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => setIsLegendOpen(false)}
+                                className="w-full mt-6 h-14 rounded-2xl text-lg font-black"
+                                type="button"
+                            >
+                                Entendido
+                            </Button>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isFullDayAlertOpen} onOpenChange={setIsFullDayAlertOpen}>
+                        <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-8">
+                            <DialogHeader className="mb-6">
+                                <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                    <Info className="h-8 w-8 text-red-600" />
+                                </div>
+                                <DialogTitle className="text-2xl font-black tracking-tighter text-center">Día Completamente Lleno</DialogTitle>
+                                <DialogDescription className="text-center text-muted-foreground font-medium pt-2">
+                                    Lo sentimos, esta fecha ya no tiene turnos disponibles (Mañana y Tarde están ocupados).
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                                <p className="text-sm text-center text-muted-foreground">
+                                    Por favor, selecciona otro día que esté marcado en <span className="text-emerald-600 font-bold text-xs">VERDE</span> o <span className="text-amber-600 font-bold text-xs">AMARILLO</span>.
+                                </p>
+                                <Button
+                                    onClick={() => setIsFullDayAlertOpen(false)}
+                                    className="w-full h-14 rounded-2xl text-lg font-black bg-red-600 hover:bg-red-700"
+                                    type="button"
+                                >
+                                    Entendido
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isConfirmationInfoOpen} onOpenChange={setIsConfirmationInfoOpen}>
+                        <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-8">
+                            <DialogHeader className="mb-6">
+                                <div className="mx-auto w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4">
+                                    <span className="text-3xl">💡</span>
+                                </div>
+                                <DialogTitle className="text-2xl font-black tracking-tighter text-center">Importante</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-6">
+                                <ul className="space-y-4">
+                                    <li className="flex items-start gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                                        <p className="text-muted-foreground font-medium">Se requiere una seña del 50% para confirmar.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
+                                        <p className="text-muted-foreground font-medium">Tienes 4 horas para enviar el comprobante.</p>
+                                    </li>
+                                </ul>
+                                <Button
+                                    onClick={() => {
+                                        setIsConfirmationInfoOpen(false)
+                                        nextStep()
+                                    }}
+                                    className="w-full h-14 rounded-2xl text-lg font-black"
+                                    type="button"
+                                >
+                                    Entendido
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
                     {/* STEP 1: DATE SELECTION */}
                     {step === 1 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -206,51 +312,12 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                         size="icon"
                                         onClick={() => setIsLegendOpen(true)}
                                         className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-all shrink-0"
+                                        type="button"
                                     >
                                         <Info className="h-6 w-6" />
                                     </Button>
                                 </h2>
                                 <p className="text-muted-foreground font-medium">Selecciona la fecha de tu preferencia en el calendario.</p>
-
-                                <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
-                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-8">
-                                        <DialogHeader className="mb-6">
-                                            <DialogTitle className="text-3xl font-black tracking-tighter text-center">Leyenda de Disponibilidad</DialogTitle>
-                                            <DialogDescription className="text-center text-muted-foreground font-medium pt-2">
-                                                Colores y estados de las fechas en nuestro calendario.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4">
-                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
-                                                <div className="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 shrink-0" />
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-black uppercase tracking-widest text-emerald-700">Disponible</span>
-                                                    <span className="text-xs font-bold text-emerald-600/60 leading-tight">Día y Noche totalmente libres para reservar</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-amber-400/5 border border-amber-400/10">
-                                                <div className="w-6 h-6 rounded-full bg-amber-400 shadow-lg shadow-amber-400/50 shrink-0" />
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-black uppercase tracking-widest text-amber-700">Parcial</span>
-                                                    <span className="text-xs font-bold text-amber-600/60 leading-tight">Solo queda 1 turno libre (Día o Noche)</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-red-500/5 border border-red-500/10">
-                                                <div className="w-6 h-6 rounded-full bg-red-500 shadow-lg shadow-red-500/50 shrink-0" />
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-black uppercase tracking-widest text-red-700">Ocupado</span>
-                                                    <span className="text-xs font-bold text-red-600/60 leading-tight">Ambos turnos están reservados</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Button
-                                            onClick={() => setIsLegendOpen(false)}
-                                            className="w-full mt-6 h-14 rounded-2xl text-lg font-black"
-                                        >
-                                            Entendido
-                                        </Button>
-                                    </DialogContent>
-                                </Dialog>
                             </div>
 
                             <Card className="p-4 md:px-4 md:py-12 rounded-[2.5rem] border-none shadow-2xl bg-card overflow-hidden min-h-[700px] flex flex-col items-stretch relative">
@@ -258,14 +325,24 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                 <Calendar
                                     mode="single"
                                     selected={watchDate}
-                                    onSelect={(date) => form.setValue("bookingDate", date as Date)}
+                                    onSelect={(date) => {
+                                        if (date) {
+                                            form.setValue("bookingDate", date as Date)
+                                            nextStep()
+                                        }
+                                    }}
+                                    onDayClick={(date, modifiers) => {
+                                        if (modifiers.full) {
+                                            setIsFullDayAlertOpen(true)
+                                        }
+                                    }}
                                     disabled={isDateDisabled}
                                     modifiers={modifiers}
                                     month={currentMonth}
                                     onMonthChange={setCurrentMonth}
                                     className="w-full h-full grow"
                                     modifiersClassNames={{
-                                        full: "bg-red-50 text-red-600 border border-red-200 opacity-100 hover:bg-red-100/50 transition-colors",
+                                        full: "bg-red-100 text-red-700 border border-red-300 opacity-100 hover:bg-red-200 transition-colors",
                                         partial: "bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100/50 transition-colors",
                                         free: "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100/50 transition-colors",
                                         selected: "ring-2 ring-primary ring-offset-4 scale-95 z-30 !bg-primary !text-primary-foreground shadow-lg shadow-primary/40 font-black rounded-xl"
@@ -273,18 +350,6 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                     locale={es}
                                 />
                             </Card>
-
-                            <div className="flex justify-end pt-8">
-                                <Button
-                                    size="lg"
-                                    onClick={nextStep}
-                                    type="button"
-                                    className="h-16 px-12 rounded-2xl text-lg font-black"
-                                    disabled={!watchDate}
-                                >
-                                    Siguiente <ChevronRight className="ml-2" />
-                                </Button>
-                            </div>
                         </div>
                     )}
 
@@ -312,7 +377,7 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                             >
                                                 <RadioGroupItem value="DAY" id="day-slot" className="sr-only" disabled={isSlotDisabled("DAY")} />
                                                 <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "DAY" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
-                                                    <Clock size={32} />
+                                                    <Sun size={32} />
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Turno Día</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">9:00 AM - 6:00 PM</span>
@@ -328,7 +393,7 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                             >
                                                 <RadioGroupItem value="NIGHT" id="night-slot" className="sr-only" disabled={isSlotDisabled("NIGHT")} />
                                                 <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "NIGHT" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
-                                                    <Clock size={32} />
+                                                    <Moon size={32} />
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Turno Noche</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">8:00 PM - 7:00 AM</span>
@@ -391,7 +456,7 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                             >
                                                 <RadioGroupItem value="COUPLE" id="couple-booking" className="sr-only" />
                                                 <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
-                                                    <Users size={32} />
+                                                    <Heart size={32} />
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Promo Pareja</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">Capacidad Máx: 2 Personas</span>
@@ -480,7 +545,17 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                 <Button variant="ghost" onClick={prevStep} type="button" className="h-14 px-8 rounded-2xl font-black">
                                     <ChevronLeft className="mr-2" /> Atrás
                                 </Button>
-                                <Button size="lg" onClick={nextStep} type="button" className="h-16 px-12 rounded-2xl text-lg font-black">
+                                <Button
+                                    size="lg"
+                                    onClick={async () => {
+                                        const isValid = await form.trigger(["guestName", "guestEmail", "guestWhatsapp"])
+                                        if (isValid) {
+                                            setIsConfirmationInfoOpen(true)
+                                        }
+                                    }}
+                                    type="button"
+                                    className="h-16 px-12 rounded-2xl text-lg font-black"
+                                >
                                     Siguiente <ChevronRight className="ml-2" />
                                 </Button>
                             </div>

@@ -88,6 +88,13 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                             <span className="font-bold text-muted-foreground">Total</span>
                             <span className="text-2xl font-black text-primary">{formatCurrency(booking.totalPrice)}</span>
                         </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-dashed border-muted-foreground/20">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Seña para Confirmar</span>
+                                <span className="text-xs font-bold text-muted-foreground italic">Equivale al 50% del total</span>
+                            </div>
+                            <span className="text-xl font-black text-primary/80">{formatCurrency(Number(booking.totalPrice) * 0.5)}</span>
+                        </div>
                     </div>
 
                     {/* Payment Info Section */}

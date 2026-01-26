@@ -252,3 +252,28 @@ export async function updatePassword(userId: string, newPassword: string) {
     revalidatePath('/admin');
     return { success: true };
 }
+
+export async function createUser(formData: FormData) {
+    const username = formData.get('username') as string;
+    const password = formData.get('password') as string;
+    const role = formData.get('role') as any;
+
+    if (!username || !password) {
+        return { error: "Usuario y contraseña son obligatorios" };
+    }
+
+    try {
+        await db.insert(users).values({
+            username,
+            password, // Plan text for now as per project pattern
+            role: role || 'ADMIN',
+            requiresPasswordChange: true
+        });
+
+        revalidatePath('/admin/ajustes');
+        return { success: true };
+    } catch (error) {
+        console.error("Error creating user:", error);
+        return { error: "El usuario ya existe o hubo un error" };
+    }
+}

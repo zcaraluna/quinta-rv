@@ -1,11 +1,15 @@
 import { db } from "@/lib/db";
-import { settings } from "@/lib/schema";
+import {
+    settings,
+    users as usersSchema
+} from "@/lib/schema";
 import { PricingSettings } from "@/components/admin/pricing-settings";
+import { UserManagement } from "@/components/admin/user-management";
 import {
     Settings,
     ShieldCheck,
     MapPin,
-    Bell
+    Users
 } from "lucide-react";
 import {
     Tabs,
@@ -16,6 +20,7 @@ import {
 
 export default async function SettingsPage() {
     const allSettings = await db.select().from(settings);
+    const allUsers = await db.select().from(usersSchema);
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -34,6 +39,9 @@ export default async function SettingsPage() {
                     </TabsTrigger>
                     <TabsTrigger value="location" className="rounded-xl px-6 py-3 font-bold gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         <MapPin size={18} /> Ubicación
+                    </TabsTrigger>
+                    <TabsTrigger value="users" className="rounded-xl px-6 py-3 font-bold gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Users size={18} /> Usuarios
                     </TabsTrigger>
                 </TabsList>
 
@@ -55,6 +63,10 @@ export default async function SettingsPage() {
                         <h3 className="text-xl font-black tracking-tight mb-2">Información de Ubicación</h3>
                         <p className="text-muted-foreground font-medium italic">Sección en desarrollo. Podrás actualizar el enlace de Google Maps y dirección.</p>
                     </div>
+                </TabsContent>
+
+                <TabsContent value="users">
+                    <UserManagement users={allUsers} />
                 </TabsContent>
             </Tabs>
         </div>

@@ -192,11 +192,11 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
 
                             <Card className="p-8 lg:p-12 rounded-[3.5rem] border-none shadow-2xl bg-card overflow-hidden">
                                 <div className="flex flex-col lg:flex-row gap-12 items-start justify-center">
-                                    <div className="w-full max-w-sm flex flex-col gap-6">
-                                        <div className="p-4 rounded-3xl bg-muted/30 grid grid-cols-1 gap-3 text-xs font-bold uppercase tracking-widest">
-                                            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Disponible</div>
-                                            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-amber-400" /> 1 Turno Libre</div>
-                                            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Agotado</div>
+                                    <div className="w-full lg:w-1/5 flex flex-col gap-8 h-full">
+                                        <div className="p-6 rounded-[2.5rem] bg-muted/30 grid grid-cols-1 gap-4 text-[10px] font-black uppercase tracking-widest">
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-emerald-500 shadow-sm" /> Disponible</div>
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-amber-400 shadow-sm" /> 1 Turno Libre</div>
+                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-red-500 shadow-sm" /> Agotado</div>
                                         </div>
 
                                         {watchDate && (

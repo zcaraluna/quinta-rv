@@ -128,6 +128,34 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
         return unavailableSlots.some(s => s.date === dateStr && s.slot === slot)
     }
 
+    // Calculate modifiers for color coding
+    const modifiers = React.useMemo(() => {
+        const full: Date[] = []
+        const partial: Date[] = []
+
+        // Group by date
+        const counts = unavailableSlots.reduce((acc, current) => {
+            acc[current.date] = (acc[current.date] || 0) + 1
+            return acc
+        }, {} as Record<string, number>)
+
+        Object.entries(counts).forEach(([dateStr, count]) => {
+            const date = new Date(dateStr + "T00:00:00")
+            if (count >= 2) full.push(date)
+            else if (count === 1) partial.push(date)
+        })
+
+        return {
+            full,
+            partial,
+            available: (date: Date) => {
+                if (isBefore(date, startOfDay(new Date()))) return false
+                const dateStr = format(date, "yyyy-MM-dd")
+                return !counts[dateStr]
+            }
+        }
+    }, [unavailableSlots])
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-2xl border shadow-md">
@@ -167,6 +195,11 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
+                                        <div className="p-3 border-b bg-muted/20 flex justify-between gap-2 text-[10px] font-black uppercase tracking-tighter">
+                                            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Disponible</div>
+                                            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-amber-400" /> 1 Turno Ocupado</div>
+                                            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-muted-foreground/30" /> Ocupado</div>
+                                        </div>
                                         <Calendar
                                             mode="single"
                                             selected={field.value}
@@ -174,6 +207,12 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                             disabled={isDateDisabled}
                                             initialFocus
                                             locale={es}
+                                            modifiers={modifiers}
+                                            modifiersClassNames={{
+                                                full: "bg-muted-foreground/20 text-muted-foreground cursor-not-allowed opacity-50",
+                                                partial: "bg-amber-100 text-amber-900 font-bold border-2 border-amber-400/50",
+                                                available: "bg-emerald-50 text-emerald-900 border border-emerald-200"
+                                            }}
                                         />
                                     </PopoverContent>
                                 </Popover>

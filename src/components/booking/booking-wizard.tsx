@@ -4,7 +4,7 @@ import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { format, isBefore, startOfDay, getDay } from "date-fns"
+import { format, isBefore, startOfDay, getDay, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek } from "date-fns"
 import { es } from "date-fns/locale"
 import {
     ChevronLeft,
@@ -70,6 +70,7 @@ const PRICING = {
 
 export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
     const [step, setStep] = React.useState(1)
+    const [currentMonth, setCurrentMonth] = React.useState(new Date())
     const [isPending, startTransition] = React.useTransition()
 
     const form = useForm<FormValues>({
@@ -190,80 +191,20 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                 <p className="text-muted-foreground font-medium">Selecciona la fecha de tu preferencia en el calendario.</p>
                             </div>
 
-                            <Card className="p-8 md:p-16 rounded-[3.5rem] border-none shadow-2xl bg-card overflow-hidden">
-                                <div className="flex flex-col items-center gap-12">
-                                    <div className="w-full max-w-4xl">
-                                        <FormField
-                                            control={form.control}
-                                            name="bookingDate"
-                                            render={({ field }) => (
-                                                <div className="w-full max-w-5xl mx-auto py-4">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={isDateDisabled}
-                                                        className="w-full border-none shadow-none p-0"
-                                                        classNames={{
-                                                            root: "w-full",
-                                                            months: "w-full flex flex-col",
-                                                            month: "w-full space-y-12",
-                                                            month_caption: "flex justify-center h-16 relative items-center",
-                                                            caption_label: "text-4xl font-black tracking-tighter capitalize px-4",
-                                                            nav: "flex items-center absolute w-full justify-between z-10",
-                                                            button_previous: "h-16 w-16 rounded-full hover:bg-muted bg-background border-2 shadow-sm flex items-center justify-center",
-                                                            button_next: "h-16 w-16 rounded-full hover:bg-muted bg-background border-2 shadow-sm flex items-center justify-center",
-                                                            table: "w-full border-separate border-spacing-y-4 border-spacing-x-2",
-                                                            weekdays: "flex w-full justify-between items-center mb-8",
-                                                            weekday: "flex-1 text-center text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60",
-                                                            week: "flex w-full justify-between items-center",
-                                                            day: "relative p-0 text-center flex-1 aspect-square",
-                                                            today: "bg-primary/5 text-primary font-black rounded-[1.5rem]",
-                                                            outside: "opacity-10 pointer-events-none",
-                                                        }}
-                                                        components={{
-                                                            DayButton: ({ className, ...props }) => (
-                                                                <CalendarDayButton
-                                                                    className={cn(
-                                                                        "h-full w-full rounded-[2rem] text-2xl font-black transition-all duration-300",
-                                                                        "hover:scale-105 hover:bg-muted",
-                                                                        props.modifiers.selected ? "bg-primary text-primary-foreground shadow-2xl scale-110" : "",
-                                                                        className
-                                                                    )}
-                                                                    {...props}
-                                                                />
-                                                            )
-                                                        }}
-                                                        locale={es}
-                                                        modifiers={modifiers}
-                                                        modifiersClassNames={{
-                                                            full: "bg-red-50 text-red-900 border-2 border-red-100 opacity-40 cursor-not-allowed grayscale",
-                                                            partial: "bg-amber-50 text-amber-900 border-2 border-amber-200 shadow-lg shadow-amber-200/20",
-                                                            available: "bg-emerald-50 text-emerald-900 border-2 border-emerald-100 shadow-md shadow-emerald-100/10"
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="w-full max-w-md space-y-8 mt-8 lg:mt-24 pb-8">
-                                        <div className="flex justify-center gap-8 py-6 px-10 rounded-[2.5rem] bg-muted/30 text-[10px] font-black uppercase tracking-widest border border-muted-foreground/5">
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-emerald-500 shadow-sm" /> Disponible</div>
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-amber-400 shadow-sm" /> 1 Libre</div>
-                                            <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-full bg-red-500 shadow-sm" /> Agotado</div>
-                                        </div>
-
-                                        <Button
-                                            size="lg"
-                                            className="w-full h-24 rounded-[2.5rem] text-2xl font-black shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                            disabled={!watchDate}
-                                            onClick={nextStep}
-                                            type="button"
-                                        >
-                                            Continuar <ChevronRight className="ml-3" size={32} />
-                                        </Button>
-                                    </div>
+                            <Card className="p-12 md:p-24 rounded-[4rem] border-none shadow-2xl bg-card overflow-hidden flex flex-col items-center justify-center text-center space-y-8 min-h-[600px]">
+                                <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                                    <Clock size={64} className="text-primary" />
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className="text-6xl font-black tracking-tighter">En desarrollo</h3>
+                                    <p className="text-xl text-muted-foreground font-medium max-w-lg">
+                                        Estamos trabajando para ofrecerte la mejor experiencia de reserva. Muy pronto podrás ver nuestro nuevo calendario.
+                                    </p>
+                                </div>
+                                <div className="flex gap-4 pt-8">
+                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce" />
                                 </div>
                             </Card>
                         </div>

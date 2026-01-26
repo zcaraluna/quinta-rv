@@ -115,3 +115,36 @@ export async function getUnavailableSlots() {
         slot: b.slot
     }));
 }
+
+export async function updateBookingStatus(id: string, status: any) {
+    await db.update(bookings)
+        .set({ status })
+        .where(eq(bookings.id, id));
+
+    revalidatePath('/admin/bookings');
+    revalidatePath(`/status/${id}`);
+    revalidatePath('/');
+    return { success: true };
+}
+
+export async function deleteBooking(id: string) {
+    await db.delete(bookings).where(eq(bookings.id, id));
+    revalidatePath('/admin/bookings');
+    revalidatePath('/');
+    return { success: true };
+}
+
+import { settings } from './schema';
+
+export async function updateSettings(key: string, value: string) {
+    await db.insert(settings)
+        .values({ key, value })
+        .onConflictDoUpdate({
+            target: settings.key,
+            set: { value }
+        });
+
+    revalidatePath('/admin/settings');
+    revalidatePath('/');
+    return { success: true };
+}

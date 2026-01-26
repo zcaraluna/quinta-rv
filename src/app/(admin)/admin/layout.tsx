@@ -46,10 +46,10 @@ export default async function AdminLayout({
                 <div className="p-4 border-t space-y-4">
                     <div className="flex items-center gap-3 px-2 py-2">
                         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-xs text-primary">
-                            {session.user?.username?.[0]?.toUpperCase() || "A"}
+                            {((session.user as any)?.username || "A")[0].toUpperCase()}
                         </div>
                         <div className="flex flex-col overflow-hidden text-sm">
-                            <span className="font-bold truncate">{session.user?.username || "Admin"}</span>
+                            <span className="font-bold truncate">{(session.user as any)?.username || "Admin"}</span>
                             <span className="text-xs text-muted-foreground">Administrador</span>
                         </div>
                     </div>

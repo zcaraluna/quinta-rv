@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { sql, count, sum, eq, gte } from "drizzle-orm";
+import { sql, count, sum, eq, gte, and } from "drizzle-orm";
 import {
     Users,
     CalendarRange,
@@ -27,7 +27,11 @@ export default async function AdminDashboard() {
     const [confirmedBookings] = await db.select({ value: count() }).from(bookings).where(eq(bookings.status, "CONFIRMED"));
 
     const thisMonthStart = startOfMonth(new Date());
-    const [revenue] = await db.select({ value: sum(bookings.totalPrice) })
+
+    // Use sql for sum to be more robust
+    const [revenue] = await db.select({
+        value: sql<string>`sum(${bookings.totalPrice})`
+    })
         .from(bookings)
         .where(and(eq(bookings.status, "CONFIRMED"), gte(bookings.createdAt, thisMonthStart)));
 
@@ -109,8 +113,6 @@ export default async function AdminDashboard() {
         </div>
     );
 }
-
-import { and } from "drizzle-orm";
 
 function StatCard({ title, value, icon, description }: { title: string; value: string; icon: React.ReactNode; description: string }) {
     return (

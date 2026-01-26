@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { sql, count, sum, eq, gte, and } from "drizzle-orm";
+import { sql, count, sum, eq, gte, and, isNull, desc } from "drizzle-orm";
 import {
     CalendarRange,
     CreditCard,
@@ -11,7 +11,6 @@ import {
     XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { desc } from "drizzle-orm";
 import {
     Card,
     CardContent,
@@ -24,9 +23,9 @@ import { startOfMonth } from "date-fns";
 
 export default async function AdminDashboard() {
     // Fetch summary stats
-    const [totalBookings] = await db.select({ value: count() }).from(bookings);
-    const [pendingPayments] = await db.select({ value: count() }).from(bookings).where(eq(bookings.status, "PENDING_PAYMENT"));
-    const [confirmedBookings] = await db.select({ value: count() }).from(bookings).where(eq(bookings.status, "CONFIRMED"));
+    const [totalBookings] = await db.select({ value: count() }).from(bookings).where(isNull(bookings.deletedAt));
+    const [pendingPayments] = await db.select({ value: count() }).from(bookings).where(and(eq(bookings.status, "PENDING_PAYMENT"), isNull(bookings.deletedAt)));
+    const [confirmedBookings] = await db.select({ value: count() }).from(bookings).where(and(eq(bookings.status, "CONFIRMED"), isNull(bookings.deletedAt)));
 
     const thisMonthStart = startOfMonth(new Date());
 
@@ -35,13 +34,18 @@ export default async function AdminDashboard() {
         value: sql<string>`sum(${bookings.totalPrice})`
     })
         .from(bookings)
-        .where(and(eq(bookings.status, "CONFIRMED"), gte(bookings.createdAt, thisMonthStart)));
+        .where(and(
+            eq(bookings.status, "CONFIRMED"),
+            gte(bookings.createdAt, thisMonthStart),
+            isNull(bookings.deletedAt)
+        ));
 
     const revenueValue = parseFloat(revenue.value || "0");
 
     // Fetch recent bookings
     const recentBookings = await db.select()
         .from(bookings)
+        .where(isNull(bookings.deletedAt))
         .orderBy(desc(bookings.createdAt))
         .limit(5);
 

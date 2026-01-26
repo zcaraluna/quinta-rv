@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
-import { and, gte, lte, or, eq, sql } from 'drizzle-orm';
+import { and, gte, lte, or, eq, sql, isNull } from 'drizzle-orm';
 
 const DEFAULT_PRICING = {
     GENERAL: {
@@ -68,6 +68,7 @@ export async function createBooking(prevState: any, formData: FormData) {
         and(
             eq(bookings.bookingDate, startOfDay(bookingDate)),
             eq(bookings.slot, slot),
+            isNull(bookings.deletedAt),
             or(
                 or(eq(bookings.status, 'CONFIRMED'), eq(bookings.status, 'MAINTENANCE')),
                 and(
@@ -145,13 +146,16 @@ export async function getUnavailableSlots() {
     })
         .from(bookings)
         .where(
-            or(
-                eq(bookings.status, 'CONFIRMED'),
-                eq(bookings.status, 'MAINTENANCE'),
-                and(
-                    eq(bookings.status, 'PENDING_PAYMENT'),
-                    gte(bookings.expiresAt, new Date())
-                )
+            and(
+                or(
+                    eq(bookings.status, 'CONFIRMED'),
+                    eq(bookings.status, 'MAINTENANCE'),
+                    and(
+                        eq(bookings.status, 'PENDING_PAYMENT'),
+                        gte(bookings.expiresAt, new Date())
+                    )
+                ),
+                isNull(bookings.deletedAt)
             )
         );
 
@@ -173,7 +177,39 @@ export async function updateBookingStatus(id: string, status: any) {
 }
 
 export async function deleteBooking(id: string) {
-    await db.delete(bookings).where(eq(bookings.id, id));
+    await db.update(bookings)
+        .set({ deletedAt: new Date() })
+        .where(eq(bookings.id, id));
+    revalidatePath('/admin/reservas');
+    revalidatePath('/');
+    return { success: true };
+}
+
+export async function createMaintenance(date: string) {
+    const bookingDate = startOfDay(new Date(date));
+
+    // Create maintenance for both slots
+    await db.insert(bookings).values([
+        {
+            guestName: "MANTENIMIENTO",
+            guestEmail: "admin@casaquinta.com",
+            guestWhatsapp: "00000000",
+            bookingDate,
+            slot: "DAY",
+            status: "MAINTENANCE",
+            totalPrice: "0",
+        },
+        {
+            guestName: "MANTENIMIENTO",
+            guestEmail: "admin@casaquinta.com",
+            guestWhatsapp: "00000000",
+            bookingDate,
+            slot: "NIGHT",
+            status: "MAINTENANCE",
+            totalPrice: "0",
+        }
+    ]);
+
     revalidatePath('/admin/reservas');
     revalidatePath('/');
     return { success: true };

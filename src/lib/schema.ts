@@ -33,6 +33,7 @@ export const bookings = pgTable("bookings", {
     adminNotes: text("admin_notes"),
     startDate: timestamp("start_date"), // Actual start time (calculated)
     endDate: timestamp("end_date"),     // Actual end time (calculated)
+    deletedAt: timestamp("deleted_at"),
 });
 
 export const settings = pgTable("settings", {

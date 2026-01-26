@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { desc, eq, and, sql, count } from "drizzle-orm";
+import { desc, eq, and, sql, count, isNull } from "drizzle-orm";
 import {
     Calendar,
     User,
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { BookingStatusBadge } from "@/components/admin/status-badge";
 import { BookingActions } from "@/components/admin/booking-actions";
+import { MaintenanceDialog } from "@/components/admin/maintenance-dialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -46,12 +47,12 @@ export default async function BookingsPage({
     const currentStatus = params.status || "ALL";
 
     // Build query conditions
-    const conditions = [];
+    const conditions = [isNull(bookings.deletedAt)];
     if (currentStatus !== "ALL") {
         conditions.push(eq(bookings.status, currentStatus as any));
     }
 
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const whereClause = and(...conditions);
 
     // Fetch total count for pagination
     const [totalRes] = await db.select({ value: count() }).from(bookings).where(whereClause);
@@ -83,11 +84,14 @@ export default async function BookingsPage({
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">Gestión de Reservas</h1>
                     <p className="text-muted-foreground font-medium text-sm sm:text-base">Gestiona y filtra todas las solicitudes de la quinta.</p>
                 </div>
-                <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20">
-                    <Link href="/admin/reservas/nuevo">
-                        <Plus className="mr-2 h-5 w-5" /> Nueva Reserva
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-3">
+                    <MaintenanceDialog />
+                    <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20">
+                        <Link href="/admin/reservas/nuevo">
+                            <Plus className="mr-2 h-5 w-5" /> Nueva Reserva
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Filters Bar */}

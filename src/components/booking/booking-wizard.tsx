@@ -22,7 +22,7 @@ import {
 
 import { cn, formatCurrency } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar, CalendarDayButton } from "@/components/ui/calendar"
 import {
     Form,
     FormControl,
@@ -197,25 +197,49 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                             control={form.control}
                                             name="bookingDate"
                                             render={({ field }) => (
-                                                <div className="w-full scale-100 md:scale-110 lg:scale-[1.25] origin-top transition-transform duration-500 py-8">
+                                                <div className="w-full max-w-5xl mx-auto py-4">
                                                     <Calendar
                                                         mode="single"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
                                                         disabled={isDateDisabled}
-                                                        className="w-full border-none shadow-none"
+                                                        className="w-full border-none shadow-none p-0"
                                                         classNames={{
+                                                            root: "w-full",
+                                                            months: "w-full flex flex-col",
                                                             month: "w-full space-y-12",
-                                                            table: "w-full border-collapse",
-                                                            day: "h-16 w-full text-center text-2xl md:text-3xl p-0 font-black",
-                                                            button: "h-auto w-full aspect-square rounded-[2rem] md:rounded-[2.5rem] hover:bg-muted transition-all duration-300"
+                                                            month_caption: "flex justify-center h-16 relative items-center",
+                                                            caption_label: "text-4xl font-black tracking-tighter capitalize px-4",
+                                                            nav: "flex items-center absolute w-full justify-between z-10",
+                                                            button_previous: "h-16 w-16 rounded-full hover:bg-muted bg-background border-2 shadow-sm flex items-center justify-center",
+                                                            button_next: "h-16 w-16 rounded-full hover:bg-muted bg-background border-2 shadow-sm flex items-center justify-center",
+                                                            table: "w-full border-separate border-spacing-y-4 border-spacing-x-2",
+                                                            weekdays: "flex w-full justify-between items-center mb-8",
+                                                            weekday: "flex-1 text-center text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/60",
+                                                            week: "flex w-full justify-between items-center",
+                                                            day: "relative p-0 text-center flex-1 aspect-square",
+                                                            today: "bg-primary/5 text-primary font-black rounded-[1.5rem]",
+                                                            outside: "opacity-10 pointer-events-none",
+                                                        }}
+                                                        components={{
+                                                            DayButton: ({ className, ...props }) => (
+                                                                <CalendarDayButton
+                                                                    className={cn(
+                                                                        "h-full w-full rounded-[2rem] text-2xl font-black transition-all duration-300",
+                                                                        "hover:scale-105 hover:bg-muted",
+                                                                        props.modifiers.selected ? "bg-primary text-primary-foreground shadow-2xl scale-110" : "",
+                                                                        className
+                                                                    )}
+                                                                    {...props}
+                                                                />
+                                                            )
                                                         }}
                                                         locale={es}
                                                         modifiers={modifiers}
                                                         modifiersClassNames={{
-                                                            full: "bg-red-100 text-red-900 border-2 border-red-200 opacity-50 cursor-not-allowed",
-                                                            partial: "bg-amber-100 text-amber-900 border-2 border-amber-300 shadow-lg shadow-amber-200/50",
-                                                            available: "bg-emerald-50 text-emerald-900 border border-emerald-100 shadow-md shadow-emerald-100/50"
+                                                            full: "bg-red-50 text-red-900 border-2 border-red-100 opacity-40 cursor-not-allowed grayscale",
+                                                            partial: "bg-amber-50 text-amber-900 border-2 border-amber-200 shadow-lg shadow-amber-200/20",
+                                                            available: "bg-emerald-50 text-emerald-900 border-2 border-emerald-100 shadow-md shadow-emerald-100/10"
                                                         }}
                                                     />
                                                 </div>

@@ -182,12 +182,20 @@ import { users } from './schema';
 // Removed bcryptjs import as existing auth uses plain text comparison.
 
 export async function updatePassword(userId: string, newPassword: string) {
-    await db.update(users)
-        .set({
-            password: newPassword, // Note: Should probably be hashed, but I'll follow current pattern
-            requiresPasswordChange: false
-        })
-        .where(eq(users.id, userId));
+    console.log("Updating password for user:", userId);
+    try {
+        await db.update(users)
+            .set({
+                password: newPassword,
+                requiresPasswordChange: false
+            })
+            .where(eq(users.id, userId));
+
+        console.log("Password updated successfully in DB");
+    } catch (error) {
+        console.error("Error updating password in DB:", error);
+        return { success: false };
+    }
 
     revalidatePath('/admin');
     return { success: true };

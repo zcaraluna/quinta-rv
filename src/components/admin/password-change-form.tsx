@@ -43,18 +43,23 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
     });
 
     async function onSubmit(values: FormValues) {
+        console.log("Form submitted, calling updatePassword action...");
         setIsPending(true);
         try {
             const result = await updatePassword(userId, values.password);
+            console.log("Action result:", result);
             if (result.success) {
                 toast.success("Contraseña actualizada correctamente");
-                router.push("/admin");
+                console.log("Refreshing and redirecting to /admin");
                 router.refresh();
+                router.push("/admin");
             } else {
                 toast.error("Error al actualizar la contraseña");
+                console.error("Action returned success: false");
             }
         } catch (error) {
             toast.error("Ocurrió un error inesperado");
+            console.error("Unexpected error in onSubmit:", error);
         } finally {
             setIsPending(false);
         }

@@ -60,14 +60,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             return session;
         },
-        authorized({ auth, request: { nextUrl } }) {
+        async authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const requiresPasswordChange = (auth?.user as any)?.requiresPasswordChange;
+            let requiresPasswordChange = (auth?.user as any)?.requiresPasswordChange;
+
             const isOnAdmin = nextUrl.pathname.startsWith("/admin");
             const isChangingPassword = nextUrl.pathname === "/admin/cambiar-contrasena";
 
             if (isOnAdmin) {
                 if (!isLoggedIn) return false;
+
+                // If the session says we need a change, double check with the DB to handle real-time updates
+                if (requiresPasswordChange) {
+                    const [user] = await db.select({ requiresPasswordChange: users.requiresPasswordChange })
+                        .from(users)
+                        .where(eq(users.id, (auth.user as any).id));
+                    if (user) {
+                        requiresPasswordChange = user.requiresPasswordChange;
+                    }
+                }
+
                 if (requiresPasswordChange && !isChangingPassword) {
                     return Response.redirect(new URL("/admin/cambiar-contrasena", nextUrl));
                 }

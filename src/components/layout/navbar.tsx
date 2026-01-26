@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Menu, Home, Calendar, Sparkles, Users, LogIn, X, Tag } from "lucide-react"
+import { Menu, Home, Calendar, Sparkles, Users, LogIn, X, Tag, LayoutDashboard } from "lucide-react"
 import {
     Sheet,
     SheetContent,
@@ -24,9 +24,10 @@ const NAV_ITEMS = [
     { label: "Sobre Nosotros", href: "/about", icon: Users },
 ]
 
-export function Navbar() {
+export function Navbar({ session }: { session?: any }) {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
+    const isLoggedIn = !!session;
 
     const NavLinks = ({ onClick, isMobile = false }: { onClick?: () => void; isMobile?: boolean }) => (
         <>
@@ -74,11 +75,11 @@ export function Navbar() {
 
                 <div className="flex items-center gap-2 sm:gap-4">
                     <Link
-                        href="/login"
+                        href={isLoggedIn ? "/admin" : "/login"}
                         className="hidden sm:flex items-center gap-2 px-5 py-2 text-sm font-bold bg-foreground text-background rounded-full hover:bg-foreground/90 transition-all hover:scale-105 active:scale-95 shadow-sm"
                     >
-                        <LogIn className="h-4 w-4" />
-                        Iniciar Sesión
+                        {isLoggedIn ? <LayoutDashboard className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                        {isLoggedIn ? "Panel Admin" : "Iniciar Sesión"}
                     </Link>
 
                     {/* Mobile Navigation */}
@@ -110,12 +111,12 @@ export function Navbar() {
 
                                     <div className="p-6 mt-auto border-t bg-muted/10">
                                         <Link
-                                            href="/login"
+                                            href={isLoggedIn ? "/admin" : "/login"}
                                             onClick={() => setIsOpen(false)}
                                             className="flex items-center justify-center gap-3 w-full p-5 text-base font-black bg-foreground text-background rounded-[1.5rem] shadow-xl hover:shadow-2xl transition-all active:scale-95"
                                         >
-                                            <LogIn className="h-5 w-5" />
-                                            Iniciar Sesión
+                                            {isLoggedIn ? <LayoutDashboard className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+                                            {isLoggedIn ? "Panel Admin" : "Iniciar Sesión"}
                                         </Link>
                                     </div>
                                 </div>

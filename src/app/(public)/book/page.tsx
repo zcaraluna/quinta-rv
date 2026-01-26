@@ -7,7 +7,7 @@ export default async function BookingPage() {
 
     return (
         <main className="min-h-screen pt-32 pb-20 px-4 bg-muted/20">
-            <div className="container mx-auto max-w-5xl">
+            <div className="container mx-auto max-w-4xl">
                 <BookingWizard unavailableSlots={unavailableSlots} />
             </div>
             <Toaster position="top-center" />

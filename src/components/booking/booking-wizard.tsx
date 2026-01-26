@@ -37,8 +37,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { createBooking } from "@/lib/actions"
-import { PricingModal } from "./pricing-modal"
 import { Card } from "@/components/ui/card"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 const formSchema = z.object({
     guestName: z.string().min(2, "Nombre muy corto"),
@@ -72,6 +78,12 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
     const [step, setStep] = React.useState(1)
     const [currentMonth, setCurrentMonth] = React.useState(new Date())
     const [isPending, startTransition] = React.useTransition()
+    const [isLegendOpen, setIsLegendOpen] = React.useState(false)
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => setIsLegendOpen(true), 800)
+        return () => clearTimeout(timer)
+    }, [])
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -102,7 +114,6 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
 
     const totalPrice = calculatePrice()
 
-    // Status modifiers for calendar
     const modifiers = React.useMemo(() => {
         const full: Date[] = []
         const partial: Date[] = []
@@ -120,10 +131,11 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
         return {
             full,
             partial,
-            available: (date: Date) => {
-                if (isBefore(date, startOfDay(new Date()))) return false
+            free: (date: Date) => {
+                const today = startOfDay(new Date())
+                if (isBefore(date, today)) return false
                 const dateStr = format(date, "yyyy-MM-dd")
-                return !counts[dateStr]
+                return !counts[dateStr] && !isBefore(date, today)
             }
         }
     }, [unavailableSlots])
@@ -166,10 +178,10 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
     }
 
     return (
-        <div className="max-w-6xl mx-auto w-full">
+        <div className="max-w-none mx-auto w-full">
             {/* Progress Bar */}
             <div className="mb-12">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4 h-6">
                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Paso {step} de 5</span>
                     <span className="text-xs font-black uppercase tracking-widest text-primary">{Math.round((step / 5) * 100)}% Completado</span>
                 </div>
@@ -186,27 +198,93 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                     {/* STEP 1: DATE SELECTION */}
                     {step === 1 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="text-center space-y-2">
-                                <h2 className="text-4xl font-black tracking-tighter">¿Cuándo quieres venir?</h2>
+                            <div className="text-center space-y-2 relative group">
+                                <h2 className="text-4xl font-black tracking-tighter flex items-center justify-center gap-4">
+                                    ¿Cuándo quieres venir?
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setIsLegendOpen(true)}
+                                        className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-all shrink-0"
+                                    >
+                                        <Info className="h-6 w-6" />
+                                    </Button>
+                                </h2>
                                 <p className="text-muted-foreground font-medium">Selecciona la fecha de tu preferencia en el calendario.</p>
+
+                                <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
+                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-8">
+                                        <DialogHeader className="mb-6">
+                                            <DialogTitle className="text-3xl font-black tracking-tighter text-center">Leyenda de Disponibilidad</DialogTitle>
+                                            <DialogDescription className="text-center text-muted-foreground font-medium pt-2">
+                                                Colores y estados de las fechas en nuestro calendario.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4">
+                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
+                                                <div className="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 shrink-0" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-black uppercase tracking-widest text-emerald-700">Disponible</span>
+                                                    <span className="text-xs font-bold text-emerald-600/60 leading-tight">Día y Noche totalmente libres para reservar</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-amber-400/5 border border-amber-400/10">
+                                                <div className="w-6 h-6 rounded-full bg-amber-400 shadow-lg shadow-amber-400/50 shrink-0" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-black uppercase tracking-widest text-amber-700">Parcial</span>
+                                                    <span className="text-xs font-bold text-amber-600/60 leading-tight">Solo queda 1 turno libre (Día o Noche)</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4 p-5 rounded-3xl bg-red-500/5 border border-red-500/10">
+                                                <div className="w-6 h-6 rounded-full bg-red-500 shadow-lg shadow-red-500/50 shrink-0" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-black uppercase tracking-widest text-red-700">Ocupado</span>
+                                                    <span className="text-xs font-bold text-red-600/60 leading-tight">Ambos turnos están reservados</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            onClick={() => setIsLegendOpen(false)}
+                                            className="w-full mt-6 h-14 rounded-2xl text-lg font-black"
+                                        >
+                                            Entendido
+                                        </Button>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
 
-                            <Card className="p-12 md:p-24 rounded-[4rem] border-none shadow-2xl bg-card overflow-hidden flex flex-col items-center justify-center text-center space-y-8 min-h-[600px]">
-                                <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-                                    <Clock size={64} className="text-primary" />
-                                </div>
-                                <div className="space-y-4">
-                                    <h3 className="text-6xl font-black tracking-tighter">En desarrollo</h3>
-                                    <p className="text-xl text-muted-foreground font-medium max-w-lg">
-                                        Estamos trabajando para ofrecerte la mejor experiencia de reserva. Muy pronto podrás ver nuestro nuevo calendario.
-                                    </p>
-                                </div>
-                                <div className="flex gap-4 pt-8">
-                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
-                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
-                                    <div className="w-3 h-3 rounded-full bg-primary animate-bounce" />
-                                </div>
+                            <Card className="p-4 md:px-4 md:py-12 rounded-[2.5rem] border-none shadow-2xl bg-card overflow-hidden min-h-[700px] flex flex-col items-stretch relative">
+
+                                <Calendar
+                                    mode="single"
+                                    selected={watchDate}
+                                    onSelect={(date) => form.setValue("bookingDate", date as Date)}
+                                    disabled={isDateDisabled}
+                                    modifiers={modifiers}
+                                    month={currentMonth}
+                                    onMonthChange={setCurrentMonth}
+                                    className="w-full h-full grow"
+                                    modifiersClassNames={{
+                                        full: "bg-red-50 text-red-600 border border-red-200 opacity-100 hover:bg-red-100/50 transition-colors",
+                                        partial: "bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100/50 transition-colors",
+                                        free: "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100/50 transition-colors",
+                                        selected: "ring-2 ring-primary ring-offset-4 scale-95 z-30 !bg-primary !text-primary-foreground shadow-lg shadow-primary/40 font-black rounded-xl"
+                                    }}
+                                    locale={es}
+                                />
                             </Card>
+
+                            <div className="flex justify-end pt-8">
+                                <Button
+                                    size="lg"
+                                    onClick={nextStep}
+                                    type="button"
+                                    className="h-16 px-12 rounded-2xl text-lg font-black"
+                                    disabled={!watchDate}
+                                >
+                                    Siguiente <ChevronRight className="ml-2" />
+                                </Button>
+                            </div>
                         </div>
                     )}
 

@@ -198,7 +198,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                         <div className="p-3 border-b bg-muted/20 flex justify-between gap-2 text-[10px] font-black uppercase tracking-tighter">
                                             <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Disponible</div>
                                             <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-amber-400" /> 1 Turno Ocupado</div>
-                                            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-muted-foreground/30" /> Ocupado</div>
+                                            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-red-500" /> Ocupado</div>
                                         </div>
                                         <Calendar
                                             mode="single"
@@ -209,7 +209,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                             locale={es}
                                             modifiers={modifiers}
                                             modifiersClassNames={{
-                                                full: "bg-muted-foreground/20 text-muted-foreground cursor-not-allowed opacity-50",
+                                                full: "bg-red-100 text-red-900 font-bold border-2 border-red-400/50 cursor-not-allowed opacity-50",
                                                 partial: "bg-amber-100 text-amber-900 font-bold border-2 border-amber-400/50",
                                                 available: "bg-emerald-50 text-emerald-900 border border-emerald-200"
                                             }}

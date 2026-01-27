@@ -31,6 +31,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function PasswordChangeForm({ userId }: { userId: string }) {
+    console.log("PasswordChangeForm rendered with userId:", userId);
     const [isPending, setIsPending] = useState(false);
     const router = useRouter();
 
@@ -43,26 +44,33 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
     });
 
     async function onSubmit(values: FormValues) {
-        console.log("Form submitted, calling updatePassword action...");
+        console.log("onSubmit starting with values:", { ...values, password: "[REDACTED]" });
         setIsPending(true);
         try {
+            console.log("Calling updatePassword server action...");
             const result = await updatePassword(userId, values.password);
-            console.log("Action result:", result);
+            console.log("Server action updatePassword returned:", result);
             if (result.success) {
                 toast.success("Contraseña actualizada correctamente");
-                console.log("Refreshing and redirecting to /admin");
+                console.log("Refreshing and navigating to /admin...");
                 router.refresh();
                 router.push("/admin");
             } else {
                 toast.error("Error al actualizar la contraseña");
-                console.error("Action returned success: false");
+                console.error("Server action returned success: false");
             }
         } catch (error) {
             toast.error("Ocurrió un error inesperado");
-            console.error("Unexpected error in onSubmit:", error);
+            console.error("Exception caught in onSubmit:", error);
         } finally {
             setIsPending(false);
         }
+    }
+
+    // Debug: Log form errors if they exist
+    const errors = form.formState.errors;
+    if (Object.keys(errors).length > 0) {
+        console.log("Current Form Errors:", errors);
     }
 
     return (

@@ -234,22 +234,32 @@ import { users } from './schema';
 // Removed bcryptjs import as existing auth uses plain text comparison.
 
 export async function updatePassword(userId: string, newPassword: string) {
-    console.log("Updating password for user:", userId);
+    console.log("--- updatePassword action START ---");
+    console.log("Target userId:", userId);
     try {
-        await db.update(users)
+        if (!userId) {
+            console.error("Error: userId is missing in updatePassword action");
+            return { success: false, error: "Missing userId" };
+        }
+
+        console.log("Updating password in DB...");
+        const updateResult = await db.update(users)
             .set({
                 password: newPassword,
                 requiresPasswordChange: false
             })
             .where(eq(users.id, userId));
 
+        console.log("DB Update Result:", updateResult);
         console.log("Password updated successfully in DB");
     } catch (error) {
         console.error("Error updating password in DB:", error);
-        return { success: false };
+        return { success: false, error: "DB update failed" };
     }
 
+    console.log("Revalidating path /admin");
     revalidatePath('/admin');
+    console.log("--- updatePassword action END ---");
     return { success: true };
 }
 

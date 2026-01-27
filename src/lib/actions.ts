@@ -287,3 +287,17 @@ export async function createUser(formData: FormData) {
         return { error: "El usuario ya existe o hubo un error" };
     }
 }
+
+export async function deleteUser(userId: string) {
+    console.log("Deleting user:", userId);
+    try {
+        await db.delete(users).where(eq(users.id, userId));
+        console.log("User deleted successfully from DB");
+    } catch (error) {
+        console.error("Error deleting user from DB:", error);
+        return { success: false, error: "Error de base de datos" };
+    }
+
+    revalidatePath('/admin/ajustes');
+    return { success: true };
+}

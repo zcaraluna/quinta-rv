@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { createUser } from "@/lib/actions";
+import { createUser, deleteUser } from "@/lib/actions";
 import {
     Card,
     CardContent,
@@ -53,6 +53,23 @@ export function UserManagement({ users }: UserManagementProps) {
                     setPassword("");
                 } else {
                     toast.error(result.error || "Error al crear usuario");
+                }
+            } catch (error) {
+                toast.error("Error de conexión");
+            }
+        });
+    };
+
+    const handleDeleteUser = async (userId: string) => {
+        if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) return;
+
+        startTransition(async () => {
+            try {
+                const result = await deleteUser(userId);
+                if (result.success) {
+                    toast.success("Usuario eliminado correctamente");
+                } else {
+                    toast.error(result.error || "Error al eliminar usuario");
                 }
             } catch (error) {
                 toast.error("Error de conexión");
@@ -148,6 +165,7 @@ export function UserManagement({ users }: UserManagementProps) {
                                     <TableHead className="font-bold px-6">Usuario</TableHead>
                                     <TableHead className="font-bold">Rol</TableHead>
                                     <TableHead className="font-bold">Estado</TableHead>
+                                    <TableHead className="font-bold text-right px-6">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -176,6 +194,17 @@ export function UserManagement({ users }: UserManagementProps) {
                                                     Activo
                                                 </span>
                                             )}
+                                        </TableCell>
+                                        <TableCell className="text-right px-6">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                                                onClick={() => handleDeleteUser(u.id)}
+                                                disabled={isPending}
+                                            >
+                                                <Trash2 size={18} />
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}

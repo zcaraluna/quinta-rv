@@ -156,7 +156,10 @@ export default async function BookingsPage({
                                                 {format(booking.bookingDate, "EEEE d 'de' MMMM", { locale: es })}
                                             </span>
                                             <span className="text-[11px] font-black text-primary/70 uppercase tracking-widest mt-1">
-                                                {booking.slot === 'DAY' ? 'Turno Día (09:00 - 19:00)' : 'Turno Noche (21:00 - 07:00)'}
+                                                {booking.slot === 'DAY'
+                                                    ? `Turno Día (${booking.isCouplePromo === "true" ? "10:00 - 19:00" : "09:00 - 18:00"})`
+                                                    : `Turno Noche (${booking.isCouplePromo === "true" ? "20:00 - 09:00" : "20:00 - 07:00"})`
+                                                }
                                             </span>
                                         </div>
                                     </TableCell>

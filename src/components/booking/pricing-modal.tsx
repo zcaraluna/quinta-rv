@@ -84,8 +84,8 @@ export function PricingModal() {
                     </section>
 
                     <div className="text-[10px] text-muted-foreground bg-muted/30 p-2 rounded">
-                        * Horarios: Día (09:00 AM - 06:00 PM) | Noche (08:00 PM - 07:00/08:00 AM).
-                        Los horarios exactos pueden variar según el día seleccionado.
+                        * Horarios: Día (09:00 - 18:00) | Noche (20:00 - 07:00).
+                        Promo Parejas: Día (10:00 - 19:00) | Noche (20:00 - 09:00).
                     </div>
                 </div>
             </DialogContent>

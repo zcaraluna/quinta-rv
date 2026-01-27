@@ -61,6 +61,8 @@ export function ManualBookingForm() {
         },
     });
 
+    const watchCouple = form.watch("isCouplePromo");
+
     async function onSubmit(values: FormValues) {
         setIsPending(true);
         const formData = new FormData();
@@ -231,13 +233,17 @@ export function ManualBookingForm() {
                                                 <FormControl>
                                                     <RadioGroupItem value="DAY" />
                                                 </FormControl>
-                                                <FormLabel className="font-medium cursor-pointer">Día (09:00 - 19:00)</FormLabel>
+                                                <FormLabel className="font-medium cursor-pointer">
+                                                    Día ({watchCouple ? "10:00 - 19:00" : "09:00 - 18:00"})
+                                                </FormLabel>
                                             </FormItem>
                                             <FormItem className="flex items-center space-x-3 space-y-0">
                                                 <FormControl>
                                                     <RadioGroupItem value="NIGHT" />
                                                 </FormControl>
-                                                <FormLabel className="font-medium cursor-pointer">Noche (21:00 - 07:00)</FormLabel>
+                                                <FormLabel className="font-medium cursor-pointer">
+                                                    Noche ({watchCouple ? "20:00 - 09:00" : "20:00 - 07:00"})
+                                                </FormLabel>
                                             </FormItem>
                                         </RadioGroup>
                                     </FormControl>

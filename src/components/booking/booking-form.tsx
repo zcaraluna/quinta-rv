@@ -247,7 +247,9 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                                 )}
                                             >
                                                 <span className="text-sm font-bold">Día</span>
-                                                <span className="text-[10px] text-muted-foreground font-medium">9:00 AM - 6:00 PM</span>
+                                                <span className="text-[10px] text-muted-foreground font-medium">
+                                                    {watchCouple ? "10:00 - 19:00" : "09:00 - 18:00"}
+                                                </span>
                                             </label>
                                         </FormItem>
                                         <FormItem>
@@ -263,7 +265,9 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                                                 )}
                                             >
                                                 <span className="text-sm font-bold">Noche</span>
-                                                <span className="text-[10px] text-muted-foreground font-medium">8:00 PM - 7:00 AM</span>
+                                                <span className="text-[10px] text-muted-foreground font-medium">
+                                                    {watchCouple ? "20:00 - 09:00" : "20:00 - 07:00"}
+                                                </span>
                                             </label>
                                         </FormItem>
                                     </RadioGroup>

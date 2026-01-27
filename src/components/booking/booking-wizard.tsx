@@ -353,69 +353,8 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                         </div>
                     )}
 
-                    {/* STEP 2: SLOT SELECTION */}
+                    {/* STEP 2: PROMO & CAPACITY */}
                     {step === 2 && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                            <div className="text-center space-y-2">
-                                <h2 className="text-4xl font-black tracking-tighter">¿En qué horario?</h2>
-                                <p className="text-muted-foreground font-medium">Elige el turno que mejor se adapte a tu plan.</p>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                                <FormField
-                                    control={form.control}
-                                    name="slot"
-                                    render={({ field }) => (
-                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-2">
-                                            <label
-                                                htmlFor="day-slot"
-                                                className={cn(
-                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
-                                                    field.value === "DAY" ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" : "border-muted bg-card hover:border-muted-foreground/20",
-                                                    isSlotDisabled("DAY") && "opacity-30 cursor-not-allowed grayscale pointer-events-none"
-                                                )}
-                                            >
-                                                <RadioGroupItem value="DAY" id="day-slot" className="sr-only" disabled={isSlotDisabled("DAY")} />
-                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "DAY" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
-                                                    <Sun size={32} />
-                                                </div>
-                                                <span className="text-2xl font-black tracking-tight">Turno Día</span>
-                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">9:00 AM - 6:00 PM</span>
-                                            </label>
-
-                                            <label
-                                                htmlFor="night-slot"
-                                                className={cn(
-                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
-                                                    field.value === "NIGHT" ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" : "border-muted bg-card hover:border-muted-foreground/20",
-                                                    isSlotDisabled("NIGHT") && "opacity-30 cursor-not-allowed grayscale pointer-events-none"
-                                                )}
-                                            >
-                                                <RadioGroupItem value="NIGHT" id="night-slot" className="sr-only" disabled={isSlotDisabled("NIGHT")} />
-                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "NIGHT" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
-                                                    <Moon size={32} />
-                                                </div>
-                                                <span className="text-2xl font-black tracking-tight">Turno Noche</span>
-                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">8:00 PM - 7:00 AM</span>
-                                            </label>
-                                        </RadioGroup>
-                                    )}
-                                />
-                            </div>
-
-                            <div className="flex justify-between items-center max-w-2xl mx-auto pt-8">
-                                <Button variant="ghost" onClick={prevStep} type="button" className="h-14 px-8 rounded-2xl font-black">
-                                    <ChevronLeft className="mr-2" /> Atrás
-                                </Button>
-                                <Button size="lg" onClick={nextStep} type="button" className="h-16 px-12 rounded-2xl text-lg font-black">
-                                    Siguiente <ChevronRight className="ml-2" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* STEP 3: PROMO & CAPACITY */}
-                    {step === 3 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="text-center space-y-2">
                                 <h2 className="text-4xl font-black tracking-tighter">¿Es una escapada para dos?</h2>
@@ -460,6 +399,71 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Promo Pareja</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">Capacidad Máx: 2 Personas</span>
+                                            </label>
+                                        </RadioGroup>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="flex justify-between items-center max-w-2xl mx-auto pt-8">
+                                <Button variant="ghost" onClick={prevStep} type="button" className="h-14 px-8 rounded-2xl font-black">
+                                    <ChevronLeft className="mr-2" /> Atrás
+                                </Button>
+                                <Button size="lg" onClick={nextStep} type="button" className="h-16 px-12 rounded-2xl text-lg font-black">
+                                    Siguiente <ChevronRight className="ml-2" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 3: SLOT SELECTION */}
+                    {step === 3 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="text-center space-y-2">
+                                <h2 className="text-4xl font-black tracking-tighter">¿En qué horario?</h2>
+                                <p className="text-muted-foreground font-medium">Elige el turno que mejor se adapte a tu plan.</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                                <FormField
+                                    control={form.control}
+                                    name="slot"
+                                    render={({ field }) => (
+                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-2">
+                                            <label
+                                                htmlFor="day-slot"
+                                                className={cn(
+                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
+                                                    field.value === "DAY" ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" : "border-muted bg-card hover:border-muted-foreground/20",
+                                                    isSlotDisabled("DAY") && "opacity-30 cursor-not-allowed grayscale pointer-events-none"
+                                                )}
+                                            >
+                                                <RadioGroupItem value="DAY" id="day-slot" className="sr-only" disabled={isSlotDisabled("DAY")} />
+                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "DAY" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
+                                                    <Sun size={32} />
+                                                </div>
+                                                <span className="text-2xl font-black tracking-tight">Turno Día</span>
+                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">
+                                                    {watchCouple ? "10:00 - 19:00" : "09:00 - 18:00"}
+                                                </span>
+                                            </label>
+
+                                            <label
+                                                htmlFor="night-slot"
+                                                className={cn(
+                                                    "group flex flex-col items-center justify-center p-8 rounded-[2.5rem] border-4 transition-all duration-300 cursor-pointer text-center",
+                                                    field.value === "NIGHT" ? "border-primary bg-primary/5 shadow-xl shadow-primary/10" : "border-muted bg-card hover:border-muted-foreground/20",
+                                                    isSlotDisabled("NIGHT") && "opacity-30 cursor-not-allowed grayscale pointer-events-none"
+                                                )}
+                                            >
+                                                <RadioGroupItem value="NIGHT" id="night-slot" className="sr-only" disabled={isSlotDisabled("NIGHT")} />
+                                                <div className={cn("p-4 rounded-2xl mb-4 transition-colors", field.value === "NIGHT" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10")}>
+                                                    <Moon size={32} />
+                                                </div>
+                                                <span className="text-2xl font-black tracking-tight">Turno Noche</span>
+                                                <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">
+                                                    {watchCouple ? "20:00 - 09:00" : "20:00 - 07:00"}
+                                                </span>
                                             </label>
                                         </RadioGroup>
                                     )}
@@ -580,7 +584,9 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                         <span className="text-2xl font-black tracking-tight capitalize">
                                             {format(watchDate, "EEEE d 'de' MMMM", { locale: es })}
                                         </span >
-                                        <span className="font-bold text-muted-foreground">Turno {watchSlot === "DAY" ? "Día (9:00 - 18:00)" : "Noche (20:00 - 07:00)"}</span>
+                                        <span className="font-bold text-muted-foreground">
+                                            Turno {watchSlot === "DAY" ? "Día" : "Noche"} ({watchSlot === "DAY" ? (watchCouple ? "10:00 - 19:00" : "09:00 - 18:00") : (watchCouple ? "20:00 - 09:00" : "20:00 - 07:00")})
+                                        </span>
                                     </div>
                                 </div>
 

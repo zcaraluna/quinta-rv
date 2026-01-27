@@ -37,14 +37,14 @@ export default function PricingPage() {
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span>09:00 AM a 06:00 PM</span>
+                                        <span>09:00 a 18:00</span>
                                     </div>
                                     <span className="font-black text-lg text-primary">500.000gs.</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span>08:00 PM a 07:00 AM</span>
+                                        <span>20:00 a 07:00</span>
                                     </div>
                                     <span className="font-black text-lg text-primary">650.000gs.</span>
                                 </div>
@@ -57,14 +57,14 @@ export default function PricingPage() {
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span>09:00 AM a 06:00 PM</span>
+                                        <span>09:00 a 18:00</span>
                                     </div>
                                     <span className="font-black text-lg text-primary">700.000gs.</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span>08:00 PM a 07:00 AM</span>
+                                        <span>20:00 a 07:00</span>
                                     </div>
                                     <span className="font-black text-lg text-primary">800.000gs.</span>
                                 </div>
@@ -77,7 +77,7 @@ export default function PricingPage() {
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <span>09:00 AM a 06:00 PM</span>
+                                        <span>09:00 a 18:00</span>
                                     </div>
                                     <span className="font-black text-lg text-primary">800.000gs.</span>
                                 </div>
@@ -104,7 +104,7 @@ export default function PricingPage() {
                             <div className="space-y-3">
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Lunes a Viernes</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
-                                    <span className="text-sm font-medium">09:00 AM a 06:00 PM / 08:00 PM a 08:00 AM</span>
+                                    <span className="text-sm font-medium">10:00 a 19:00 / 20:00 a 09:00</span>
                                     <span className="font-black text-lg text-amber-700">250.000gs.</span>
                                 </div>
                             </div>
@@ -112,11 +112,11 @@ export default function PricingPage() {
                             <div className="space-y-3">
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Sábados</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
-                                    <span className="text-sm font-medium">10:00 AM a 06:00 PM</span>
+                                    <span className="text-sm font-medium">10:00 a 19:00</span>
                                     <span className="font-black text-lg text-amber-700">300.000gs.</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
-                                    <span className="text-sm font-medium">07:00 PM a 09:00 AM</span>
+                                    <span className="text-sm font-medium">20:00 a 09:00</span>
                                     <span className="font-black text-lg text-amber-700">400.000gs.</span>
                                 </div>
                             </div>
@@ -124,11 +124,11 @@ export default function PricingPage() {
                             <div className="space-y-3">
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Domingos</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
-                                    <span className="text-sm font-medium">10:00 AM a 06:00 PM</span>
+                                    <span className="text-sm font-medium">10:00 a 19:00</span>
                                     <span className="font-black text-lg text-amber-700">400.000gs.</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
-                                    <span className="text-sm font-medium">07:00 PM a 09:00 AM</span>
+                                    <span className="text-sm font-medium">20:00 a 09:00</span>
                                     <span className="font-black text-lg text-amber-700">300.000gs.</span>
                                 </div>
                             </div>

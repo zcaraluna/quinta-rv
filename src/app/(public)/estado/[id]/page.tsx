@@ -74,7 +74,10 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-muted-foreground font-medium">Horario</span>
                             <Badge variant="secondary" className="font-black px-3 rounded-full">
-                                {booking.slot === 'DAY' ? "Día (9:00 AM - 6:00 PM)" : "Noche (8:00 PM - 7:00 AM)"}
+                                {booking.slot === 'DAY'
+                                    ? `Día (${booking.isCouplePromo === "true" ? "10:00 - 19:00" : "09:00 - 18:00"})`
+                                    : `Noche (${booking.isCouplePromo === "true" ? "20:00 - 09:00" : "20:00 - 07:00"})`
+                                }
                             </Badge>
                         </div>
                         <div className="flex justify-between items-center text-sm">

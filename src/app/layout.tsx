@@ -7,8 +7,8 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Casa Quinta Booking",
-  description: "Reserve your stay easily.",
+  title: "Casa Quinta RV",
+  description: "Un lugar para divertirte con la familia y amigos.",
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${raleway.className} antialiased`}>
         {children}
       </body>

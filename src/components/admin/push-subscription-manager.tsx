@@ -35,27 +35,41 @@ export function PushSubscriptionManager({ userId }: { userId: string }) {
     };
 
     const subscribe = async () => {
+        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+        if (!vapidKey) {
+            toast.error("Error de configuración: Falta NEXT_PUBLIC_VAPID_PUBLIC_KEY en el servidor.");
+            console.error("VAPID Public Key is missing from environment variables.");
+            return;
+        }
+
         setLoading(true);
         try {
-            // First register the sw if not exists
+            console.log("Registering Service Worker...");
             const registration = await navigator.serviceWorker.register("/sw.js", {
                 scope: "/"
             });
 
-            // Wait for it to be active
+            console.log("Service Worker registered. Waiting for ready...");
             await navigator.serviceWorker.ready;
 
+            console.log("Subscribing to Push Manager...");
             const sub = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)
+                applicationServerKey: urlBase64ToUint8Array(vapidKey)
             });
 
+            console.log("Subscription successful. Saving to DB...");
             await savePushSubscription(userId, sub, navigator.userAgent);
             setSubscription(sub);
             toast.success("Notificaciones activadas correctamente");
-        } catch (error) {
+        } catch (error: any) {
             console.error("Subscription failed:", error);
-            toast.error("Error al activar notificaciones. Asegúrate de dar permiso.");
+            if (error.name === 'NotAllowedError') {
+                toast.error("Permiso denegado. Habilita las notificaciones en la configuración del navegador.");
+            } else {
+                toast.error(`Error: ${error.message || "No se pudo activar"}`);
+            }
         } finally {
             setLoading(false);
         }

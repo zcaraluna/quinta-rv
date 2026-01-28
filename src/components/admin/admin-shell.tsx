@@ -118,9 +118,7 @@ export function AdminShell({
                     </div>
 
                     <div className="flex items-center gap-4 md:gap-6">
-                        <div className="hidden sm:block">
-                            <PushSubscriptionManager userId={session.user.id} />
-                        </div>
+                        <PushSubscriptionManager userId={session.user.id} />
                         <AdminNotifications />
                         <span className="hidden lg:inline text-xs font-bold text-muted-foreground uppercase tracking-widest">
                             {new Date().toLocaleDateString('es-PY', { weekday: 'long', day: 'numeric', month: 'long' })}

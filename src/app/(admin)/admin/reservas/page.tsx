@@ -121,7 +121,7 @@ export default async function BookingsPage({
                             <TableHead className="font-black uppercase tracking-widest text-[10px] py-8 px-8">Cliente</TableHead>
                             <TableHead className="font-black uppercase tracking-widest text-[10px] py-8">Fecha y Turno</TableHead>
                             <TableHead className="font-black uppercase tracking-widest text-[10px] py-8">Estado</TableHead>
-                            <TableHead className="font-black uppercase tracking-widest text-[10px] py-8">Total</TableHead>
+                            <TableHead className="font-black uppercase tracking-widest text-[10px] py-8 text-center">Pagado</TableHead>
                             <TableHead className="font-black uppercase tracking-widest text-[10px] py-8 text-right px-8">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -167,8 +167,22 @@ export default async function BookingsPage({
                                     <TableCell className="py-6">
                                         <BookingStatusBadge status={booking.status} expiresAt={booking.expiresAt} />
                                     </TableCell>
-                                    <TableCell className="py-6 font-black text-lg">
-                                        {formatCurrency(Number(booking.totalPrice))}
+                                    <TableCell className="py-6 font-black text-lg text-center text-emerald-600">
+                                        {(() => {
+                                            const total = Number(booking.totalPrice);
+                                            if (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED') {
+                                                return formatCurrency(total);
+                                            }
+                                            if (booking.status === 'RESERVED') {
+                                                return (
+                                                    <div className="flex flex-col items-center">
+                                                        <span>{formatCurrency(total / 2)}</span>
+                                                        <span className="text-[10px] text-muted-foreground uppercase opacity-50">Seña (50%)</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return formatCurrency(0);
+                                        })()}
                                     </TableCell>
                                     <TableCell className="py-6 px-8 text-right">
                                         <BookingActions bookingId={booking.id} currentStatus={booking.status} />

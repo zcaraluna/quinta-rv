@@ -42,13 +42,22 @@ export default async function AdminDashboard() {
             isNull(bookings.deletedAt)
         ));
 
-    // Monthly Revenue (Only Confirmed, excluding Maintenance is implicit as maintenance price is 0, but good to be explicit)
+    // Monthly Revenue (Actual collection: 100% for Confirmed/Completed, 50% for Reserved)
     const [revenue] = await db.select({
-        value: sql<string>`sum(${bookings.totalPrice})`
+        value: sql<string>`sum(
+            CASE 
+                WHEN ${bookings.status} = 'RESERVED' THEN CAST(${bookings.totalPrice} AS NUMERIC) / 2
+                WHEN ${bookings.status} IN ('CONFIRMED', 'COMPLETED') THEN CAST(${bookings.totalPrice} AS NUMERIC)
+                ELSE 0 
+            END
+        )`
     })
         .from(bookings)
         .where(and(
-            or(eq(bookings.status, "CONFIRMED"), eq(bookings.status, "RESERVED")),
+            or(
+                eq(bookings.status, "CONFIRMED"),
+                or(eq(bookings.status, "RESERVED"), eq(bookings.status, "COMPLETED"))
+            ),
             gte(bookings.bookingDate, thisMonthStart),
             lte(bookings.bookingDate, thisMonthEnd),
             isNull(bookings.deletedAt)
@@ -112,7 +121,7 @@ export default async function AdminDashboard() {
                     title="Ventas del Mes"
                     value={revenueValue === 0 ? "G. 0" : formatCurrency(revenueValue)}
                     icon={<CreditCard className="text-emerald-500" />}
-                    description="Reservas para este mes"
+                    description="Monto total cobrado"
                 />
                 <StatCard
                     title="Confirmadas"

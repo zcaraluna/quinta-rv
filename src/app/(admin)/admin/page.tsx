@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { sql, count, sum, eq, gte, and, or, isNull, desc } from "drizzle-orm";
+import { sql, count, sum, eq, gte, lte, and, or, isNull, desc } from "drizzle-orm";
 import {
     CalendarRange,
     CreditCard,
@@ -19,10 +19,12 @@ import {
     CardTitle
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { startOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 export default async function AdminDashboard() {
-    const thisMonthStart = startOfMonth(new Date());
+    const now = new Date();
+    const thisMonthStart = startOfMonth(now);
+    const thisMonthEnd = endOfMonth(now);
 
     // Fetch summary stats (Excluding MAINTENANCE)
     const [totalBookings] = await db.select({ value: count() })
@@ -47,7 +49,8 @@ export default async function AdminDashboard() {
         .from(bookings)
         .where(and(
             or(eq(bookings.status, "CONFIRMED"), eq(bookings.status, "RESERVED")),
-            gte(bookings.createdAt, thisMonthStart),
+            gte(bookings.bookingDate, thisMonthStart),
+            lte(bookings.bookingDate, thisMonthEnd),
             isNull(bookings.deletedAt)
         ));
 
@@ -61,7 +64,8 @@ export default async function AdminDashboard() {
     })
         .from(bookings)
         .where(and(
-            gte(bookings.createdAt, thisMonthStart),
+            gte(bookings.bookingDate, thisMonthStart),
+            lte(bookings.bookingDate, thisMonthEnd),
             isNull(bookings.deletedAt),
             sql`${bookings.status} != 'MAINTENANCE'`
         ))
@@ -108,7 +112,7 @@ export default async function AdminDashboard() {
                     title="Ventas del Mes"
                     value={revenueValue === 0 ? "G. 0" : formatCurrency(revenueValue)}
                     icon={<CreditCard className="text-emerald-500" />}
-                    description="Solo confirmadas"
+                    description="Reservas para este mes"
                 />
                 <StatCard
                     title="Confirmadas"

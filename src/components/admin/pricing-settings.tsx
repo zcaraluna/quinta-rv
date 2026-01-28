@@ -118,18 +118,18 @@ export function PricingSettings({ initialData }: { initialData: any[] }) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-primary border-b pb-2">Entre Semana</h3>
-                                <PriceInput label="Día (09-19h)" name="GENERAL_WEEKDAY_DAY" defaultValue={config.GENERAL.WEEKDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="GENERAL_WEEKDAY_NIGHT" defaultValue={config.GENERAL.WEEKDAY.NIGHT} />
+                                <PriceInput label="Día (09:00 - 18:00)" name="GENERAL_WEEKDAY_DAY" defaultValue={config.GENERAL.WEEKDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 07:00)" name="GENERAL_WEEKDAY_NIGHT" defaultValue={config.GENERAL.WEEKDAY.NIGHT} />
                             </div>
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-primary border-b pb-2">Sábados</h3>
-                                <PriceInput label="Día (09-19h)" name="GENERAL_SATURDAY_DAY" defaultValue={config.GENERAL.SATURDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="GENERAL_SATURDAY_NIGHT" defaultValue={config.GENERAL.SATURDAY.NIGHT} />
+                                <PriceInput label="Día (09:00 - 18:00)" name="GENERAL_SATURDAY_DAY" defaultValue={config.GENERAL.SATURDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 07:00)" name="GENERAL_SATURDAY_NIGHT" defaultValue={config.GENERAL.SATURDAY.NIGHT} />
                             </div>
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-primary border-b pb-2">Domingos</h3>
-                                <PriceInput label="Día (09-19h)" name="GENERAL_SUNDAY_DAY" defaultValue={config.GENERAL.SUNDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="GENERAL_SUNDAY_NIGHT" defaultValue={config.GENERAL.SUNDAY.NIGHT} />
+                                <PriceInput label="Día (09:00 - 18:00)" name="GENERAL_SUNDAY_DAY" defaultValue={config.GENERAL.SUNDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 07:00)" name="GENERAL_SUNDAY_NIGHT" defaultValue={config.GENERAL.SUNDAY.NIGHT} />
                             </div>
                         </div>
                     </CardContent>
@@ -152,18 +152,18 @@ export function PricingSettings({ initialData }: { initialData: any[] }) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-pink-600 border-b pb-2">Entre Semana</h3>
-                                <PriceInput label="Día (09-19h)" name="COUPLE_WEEKDAY_DAY" defaultValue={config.COUPLE.WEEKDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="COUPLE_WEEKDAY_NIGHT" defaultValue={config.COUPLE.WEEKDAY.NIGHT} />
+                                <PriceInput label="Día (10:00 - 19:00)" name="COUPLE_WEEKDAY_DAY" defaultValue={config.COUPLE.WEEKDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 09:00)" name="COUPLE_WEEKDAY_NIGHT" defaultValue={config.COUPLE.WEEKDAY.NIGHT} />
                             </div>
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-pink-600 border-b pb-2">Sábados</h3>
-                                <PriceInput label="Día (09-19h)" name="COUPLE_SATURDAY_DAY" defaultValue={config.COUPLE.SATURDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="COUPLE_SATURDAY_NIGHT" defaultValue={config.COUPLE.SATURDAY.NIGHT} />
+                                <PriceInput label="Día (10:00 - 19:00)" name="COUPLE_SATURDAY_DAY" defaultValue={config.COUPLE.SATURDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 09:00)" name="COUPLE_SATURDAY_NIGHT" defaultValue={config.COUPLE.SATURDAY.NIGHT} />
                             </div>
                             <div className="space-y-4 pt-2">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-pink-600 border-b pb-2">Domingos</h3>
-                                <PriceInput label="Día (09-19h)" name="COUPLE_SUNDAY_DAY" defaultValue={config.COUPLE.SUNDAY.DAY} />
-                                <PriceInput label="Noche (21-07h)" name="COUPLE_SUNDAY_NIGHT" defaultValue={config.COUPLE.SUNDAY.NIGHT} />
+                                <PriceInput label="Día (10:00 - 19:00)" name="COUPLE_SUNDAY_DAY" defaultValue={config.COUPLE.SUNDAY.DAY} />
+                                <PriceInput label="Noche (20:00 - 09:00)" name="COUPLE_SUNDAY_NIGHT" defaultValue={config.COUPLE.SUNDAY.NIGHT} />
                             </div>
                         </div>
                     </CardContent>

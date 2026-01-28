@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/navbar";
+import { WhatsappFloat } from "@/components/layout/whatsapp-float";
 import { auth } from "@/auth";
 
 export default async function PublicLayout({
@@ -12,6 +13,7 @@ export default async function PublicLayout({
         <>
             <Navbar session={session} />
             {children}
+            <WhatsappFloat />
         </>
     );
 }

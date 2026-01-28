@@ -2,6 +2,7 @@ import { pgTable, text, timestamp, decimal, uuid, pgEnum, boolean } from "drizzl
 
 export const statusEnum = pgEnum("status", [
     "PENDING_PAYMENT",
+    "RESERVED",
     "CONFIRMED",
     "COMPLETED",
     "CANCELLED",

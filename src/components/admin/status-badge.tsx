@@ -12,15 +12,20 @@ export function BookingStatusBadge({ status, expiresAt }: { status: string; expi
             icon: isExpired ? XCircle : Clock,
             className: isExpired ? "bg-destructive/10 text-destructive border-destructive/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20",
         },
-        CONFIRMED: {
-            label: "Confirmada",
+        RESERVED: {
+            label: "Reservado",
             icon: CheckCircle2,
             className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+        },
+        CONFIRMED: {
+            label: "Pagado",
+            icon: CheckCircle2,
+            className: "bg-blue-500/10 text-blue-600 border-blue-500/20",
         },
         COMPLETED: {
             label: "Completada",
             icon: CheckCircle2,
-            className: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+            className: "bg-slate-500/10 text-slate-600 border-slate-500/20",
         },
         CANCELLED: {
             label: "Cancelada",

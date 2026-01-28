@@ -71,7 +71,8 @@ export default async function BookingsPage({
     const statuses = [
         { label: "Todas", value: "ALL" },
         { label: "Pendientes", value: "PENDING_PAYMENT" },
-        { label: "Confirmadas", value: "CONFIRMED" },
+        { label: "Reservadas", value: "RESERVED" },
+        { label: "Pagadas", value: "CONFIRMED" },
         { label: "Completadas", value: "COMPLETED" },
         { label: "Canceladas", value: "CANCELLED" },
         { label: "Mantenimiento", value: "MAINTENANCE" },

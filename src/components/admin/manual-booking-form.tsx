@@ -207,7 +207,8 @@ export function ManualBookingForm() {
                                                 {...field}
                                             >
                                                 <option value="PENDING_PAYMENT">Pendiente Pago</option>
-                                                <option value="CONFIRMED">Confirmada</option>
+                                                <option value="RESERVED">Reservada (Seña Pagada)</option>
+                                                <option value="CONFIRMED">Pagada (Total)</option>
                                                 <option value="MAINTENANCE">Mantenimiento</option>
                                             </select>
                                         </FormControl>

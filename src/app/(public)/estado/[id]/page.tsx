@@ -25,7 +25,9 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
     // Logic to determine visual state
     const isExpired = booking.status === 'PENDING_PAYMENT' && booking.expiresAt && new Date() > booking.expiresAt;
     const showPayment = booking.status === 'PENDING_PAYMENT' && !isExpired;
+    const isReserved = booking.status === 'RESERVED';
     const isConfirmed = booking.status === 'CONFIRMED';
+    const hasPasse = isReserved || isConfirmed;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
 
@@ -39,7 +41,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
             <Card className="max-w-md w-full shadow-xl border-t-8 border-t-primary rounded-[2rem] overflow-hidden">
                 <CardHeader className="text-center pb-2">
                     <div className="mx-auto mb-4">
-                        {isConfirmed ? (
+                        {hasPasse ? (
                             <CheckCircle2 className="w-20 h-20 text-green-500 animate-in zoom-in-50 duration-500" />
                         ) : showPayment ? (
                             <Clock className="w-20 h-20 text-amber-500 animate-pulse" />
@@ -47,7 +49,9 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                             <AlertCircle className="w-20 h-20 text-destructive" />
                         )}
                     </div>
-                    <CardTitle className="text-2xl font-black">{isConfirmed ? "¡Reserva Confirmada!" : showPayment ? "Reserva Pendiente" : "Reserva Expirada"}</CardTitle>
+                    <CardTitle className="text-2xl font-black">
+                        {isConfirmed ? "¡Pago Completado!" : isReserved ? "¡Reserva Confirmada!" : showPayment ? "Reserva Pendiente" : "Reserva Expirada"}
+                    </CardTitle>
                     <CardDescription className="font-mono text-xs">ID: {booking.id}</CardDescription>
                 </CardHeader>
 
@@ -114,9 +118,9 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                     )}
 
                     {/* QR Section */}
-                    {isConfirmed && (
+                    {hasPasse && (
                         <div className="text-center space-y-4 pt-4 border-t border-dashed">
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tu Pase de Entrada</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{isConfirmed ? "Pase de Entrada (Pagado)" : "Pase de Entrada (Confirmado)"}</p>
                             <BookingQRCode value={`${baseUrl}/estado/${booking.id}`} id={booking.id} />
                         </div>
                     )}
@@ -138,7 +142,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                         </>
                     )}
 
-                    {isConfirmed && (
+                    {hasPasse && (
                         <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-2" asChild>
                             <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
                                 <MapPin className="mr-2 h-5 w-5" />

@@ -61,7 +61,7 @@ export default async function Home() {
                                 Creamos el ambiente perfecto para tus mejores momentos en familia y con amigos.
                             </p>
                             <div className="flex items-center gap-4">
-                                <a href="#" className="p-2 rounded-full bg-background border hover:text-primary transition-colors shadow-sm">
+                                <a href="https://www.instagram.com/casaquintarvluque" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border hover:text-primary transition-colors shadow-sm">
                                     <Instagram className="h-5 w-5" />
                                 </a>
                                 <a href="#" className="p-2 rounded-full bg-background border hover:text-primary transition-colors shadow-sm">
@@ -88,10 +88,6 @@ export default async function Home() {
                                 <li className="flex items-center gap-3">
                                     <Phone className="h-4 w-4 text-primary" />
                                     <span>0983 145 432</span>
-                                </li>
-                                <li className="flex items-center gap-3">
-                                    <Mail className="h-4 w-4 text-primary" />
-                                    <span>info@quintarv.com.py</span>
                                 </li>
                                 <li className="flex items-center gap-3">
                                     <MapPin className="h-4 w-4 text-primary" />

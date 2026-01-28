@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { sql, count, sum, eq, gte, and, isNull, desc } from "drizzle-orm";
+import { sql, count, sum, eq, gte, and, or, isNull, desc } from "drizzle-orm";
 import {
     CalendarRange,
     CreditCard,
@@ -35,7 +35,10 @@ export default async function AdminDashboard() {
 
     const [confirmedBookings] = await db.select({ value: count() })
         .from(bookings)
-        .where(and(eq(bookings.status, "CONFIRMED"), isNull(bookings.deletedAt)));
+        .where(and(
+            or(eq(bookings.status, "CONFIRMED"), eq(bookings.status, "RESERVED")),
+            isNull(bookings.deletedAt)
+        ));
 
     // Monthly Revenue (Only Confirmed, excluding Maintenance is implicit as maintenance price is 0, but good to be explicit)
     const [revenue] = await db.select({
@@ -43,7 +46,7 @@ export default async function AdminDashboard() {
     })
         .from(bookings)
         .where(and(
-            eq(bookings.status, "CONFIRMED"),
+            or(eq(bookings.status, "CONFIRMED"), eq(bookings.status, "RESERVED")),
             gte(bookings.createdAt, thisMonthStart),
             isNull(bookings.deletedAt)
         ));

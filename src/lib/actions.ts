@@ -70,7 +70,9 @@ export async function createBooking(prevState: any, formData: FormData) {
             eq(bookings.slot, slot),
             isNull(bookings.deletedAt),
             or(
-                or(eq(bookings.status, 'CONFIRMED'), eq(bookings.status, 'MAINTENANCE')),
+                or(eq(bookings.status, 'CONFIRMED'),
+                    or(eq(bookings.status, 'RESERVED'),
+                        eq(bookings.status, 'MAINTENANCE'))),
                 and(
                     eq(bookings.status, 'PENDING_PAYMENT'),
                     gte(bookings.expiresAt, new Date())
@@ -149,6 +151,7 @@ export async function getUnavailableSlots() {
             and(
                 or(
                     eq(bookings.status, 'CONFIRMED'),
+                    eq(bookings.status, 'RESERVED'),
                     eq(bookings.status, 'MAINTENANCE'),
                     and(
                         eq(bookings.status, 'PENDING_PAYMENT'),

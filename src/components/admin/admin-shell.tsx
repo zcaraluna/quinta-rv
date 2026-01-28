@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { AdminNotifications } from "./notifications";
+import { PushSubscriptionManager } from "./push-subscription-manager";
 
 export function AdminShell({
     children,
@@ -117,6 +118,9 @@ export function AdminShell({
                     </div>
 
                     <div className="flex items-center gap-4 md:gap-6">
+                        <div className="hidden sm:block">
+                            <PushSubscriptionManager userId={session.user.id} />
+                        </div>
                         <AdminNotifications />
                         <span className="hidden lg:inline text-xs font-bold text-muted-foreground uppercase tracking-widest">
                             {new Date().toLocaleDateString('es-PY', { weekday: 'long', day: 'numeric', month: 'long' })}

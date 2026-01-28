@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
 import { and, gte, lte, or, eq, sql, isNull, desc } from 'drizzle-orm';
+import { sendAdminPushNotification } from './notifications';
+import { pushSubscriptions } from './schema';
 
 const DEFAULT_PRICING = {
     GENERAL: {
@@ -109,6 +111,17 @@ export async function createBooking(prevState: any, formData: FormData) {
         expiresAt,
     }).returning({ id: bookings.id });
 
+    // 4. Notify Admin via Push
+    try {
+        await sendAdminPushNotification({
+            title: "¡Nueva Reserva! 🏡",
+            body: `${guestName} - ${format(bookingDate, "dd/MM/yy")} - ${slot === 'DAY' ? 'Día' : 'Noche'}`,
+            url: `${process.env.NEXT_PUBLIC_APP_URL}/admin/reservas`
+        });
+    } catch (e) {
+        console.error("Notification failed", e);
+    }
+
     redirect(`/estado/${newBooking.id}`);
 }
 
@@ -138,6 +151,26 @@ export async function createManualBooking(formData: FormData) {
     });
 
     revalidatePath('/admin/reservas');
+    return { success: true };
+}
+
+export async function savePushSubscription(userId: string, subscription: any, userAgent: string) {
+    // Check if subscription already exists
+    const subJson = JSON.stringify(subscription);
+    const existing = await db.select().from(pushSubscriptions).where(
+        and(
+            eq(pushSubscriptions.userId, userId),
+            eq(pushSubscriptions.subscription, subJson)
+        )
+    );
+
+    if (existing.length === 0) {
+        await db.insert(pushSubscriptions).values({
+            userId,
+            subscription: subJson,
+            userAgent
+        });
+    }
     return { success: true };
 }
 

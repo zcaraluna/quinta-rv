@@ -50,3 +50,11 @@ export const users = pgTable("users", {
     requiresPasswordChange: boolean("requires_password_change").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const pushSubscriptions = pgTable("push_subscriptions", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: 'cascade' }),
+    subscription: text("subscription").notNull(), // JSON stringify of PushSubscription
+    userAgent: text("user_agent"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});

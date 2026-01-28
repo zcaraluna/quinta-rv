@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
-import { and, gte, lte, or, eq, sql, isNull } from 'drizzle-orm';
+import { and, gte, lte, or, eq, sql, isNull, desc } from 'drizzle-orm';
 
 const DEFAULT_PRICING = {
     GENERAL: {
@@ -139,6 +139,20 @@ export async function createManualBooking(formData: FormData) {
 
     revalidatePath('/admin/reservas');
     return { success: true };
+}
+
+export async function getRecentPendingBookings() {
+    return await db.select()
+        .from(bookings)
+        .where(
+            and(
+                eq(bookings.status, 'PENDING_PAYMENT'),
+                isNull(bookings.deletedAt),
+                gte(bookings.createdAt, sql`NOW() - INTERVAL '24 HOURS'`)
+            )
+        )
+        .orderBy(desc(bookings.createdAt))
+        .limit(10);
 }
 
 export async function getUnavailableSlots() {

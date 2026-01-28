@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { AdminNotifications } from "./notifications";
 
 export function AdminShell({
     children,
@@ -116,6 +117,7 @@ export function AdminShell({
                     </div>
 
                     <div className="flex items-center gap-4 md:gap-6">
+                        <AdminNotifications />
                         <span className="hidden lg:inline text-xs font-bold text-muted-foreground uppercase tracking-widest">
                             {new Date().toLocaleDateString('es-PY', { weekday: 'long', day: 'numeric', month: 'long' })}
                         </span>

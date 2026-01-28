@@ -31,6 +31,7 @@ export const bookings = pgTable("bookings", {
     status: statusEnum("status").notNull().default("PENDING_PAYMENT"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     expiresAt: timestamp("expires_at"),
+    reminderSent: boolean("reminder_sent").default(false).notNull(),
     adminNotes: text("admin_notes"),
     startDate: timestamp("start_date"), // Actual start time (calculated)
     endDate: timestamp("end_date"),     // Actual end time (calculated)

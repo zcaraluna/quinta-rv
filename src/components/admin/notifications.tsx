@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getRecentPendingBookings } from "@/lib/actions";
+import { getRecentPendingBookings, checkAndSendReminders } from "@/lib/actions";
 import {
     Bell,
     Clock,
@@ -30,6 +30,9 @@ export function AdminNotifications() {
 
     const fetchNotifications = useCallback(async () => {
         try {
+            // First check for reminders to send pushes if needed
+            await checkAndSendReminders();
+
             const bookings = await getRecentPendingBookings();
             setRecentBookings(bookings);
 

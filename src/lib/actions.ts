@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
-import { and, gte, lte, or, eq, sql, isNull, desc } from 'drizzle-orm';
+import { and, gte, lte, or, eq, sql, isNull, desc, lt } from 'drizzle-orm';
 import { sendAdminPushNotification } from './notifications';
 import { pushSubscriptions } from './schema';
 
@@ -172,6 +172,45 @@ export async function savePushSubscription(userId: string, subscription: any, us
         });
     }
     return { success: true };
+}
+
+export async function checkAndSendReminders() {
+    const oneHourFromNow = new Date(Date.now() + 1000 * 60 * 60);
+
+    // Find bookings that:
+    // 1. Are PENDING_PAYMENT
+    // 2. Haven't sent a reminder yet
+    // 3. Expire in less than 1 hour (but are not already expired more than 5 mins ago)
+    const pendingReminders = await db.select()
+        .from(bookings)
+        .where(
+            and(
+                eq(bookings.status, 'PENDING_PAYMENT'),
+                eq(bookings.reminderSent, false),
+                isNull(bookings.deletedAt),
+                lt(bookings.expiresAt, oneHourFromNow),
+                gte(bookings.expiresAt, new Date())
+            )
+        );
+
+    for (const booking of pendingReminders) {
+        try {
+            await sendAdminPushNotification({
+                title: "⚠️ Seña por Vencer",
+                body: `La reserva de ${booking.guestName} vence en menos de 1 hora.`,
+                url: `${process.env.NEXT_PUBLIC_APP_URL}/admin/reservas?status=PENDING_PAYMENT`
+            });
+
+            // Mark as sent
+            await db.update(bookings)
+                .set({ reminderSent: true })
+                .where(eq(bookings.id, booking.id));
+        } catch (error) {
+            console.error(`Failed to send reminder for booking ${booking.id}:`, error);
+        }
+    }
+
+    return { processed: pendingReminders.length };
 }
 
 export async function getRecentPendingBookings() {

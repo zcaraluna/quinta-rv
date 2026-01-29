@@ -9,8 +9,15 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { HelpCircle, Clock, Users, Star } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
-export function PricingModal() {
+interface PricingModalProps {
+    pricing?: any
+}
+
+export function PricingModal({ pricing }: PricingModalProps) {
+    if (!pricing) return null;
+    const PRICING = pricing;
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -33,23 +40,27 @@ export function PricingModal() {
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="p-2 bg-muted rounded border flex justify-between">
                                 <span className="text-muted-foreground">L-V Día</span>
-                                <span className="font-bold">500.000 gs.</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.WEEKDAY.DAY)}</span>
                             </div>
                             <div className="p-2 bg-muted rounded border flex justify-between">
                                 <span className="text-muted-foreground">L-V Noche</span>
-                                <span className="font-bold">650.000 gs.</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.WEEKDAY.NIGHT)}</span>
                             </div>
                             <div className="p-2 bg-muted rounded border flex justify-between">
                                 <span className="text-muted-foreground">Sáb Día</span>
-                                <span className="font-bold">700.000 gs.</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.SATURDAY.DAY)}</span>
                             </div>
                             <div className="p-2 bg-muted rounded border flex justify-between">
                                 <span className="text-muted-foreground">Sáb Noche</span>
-                                <span className="font-bold">800.000 gs.</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.SATURDAY.NIGHT)}</span>
                             </div>
                             <div className="p-2 bg-muted rounded border flex justify-between">
                                 <span className="text-muted-foreground">Dom Día</span>
-                                <span className="font-bold">800.000 gs.</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.SUNDAY.DAY)}</span>
+                            </div>
+                            <div className="p-2 bg-muted rounded border flex justify-between">
+                                <span className="text-muted-foreground">Dom Noche</span>
+                                <span className="font-bold">{formatCurrency(PRICING.GENERAL.SUNDAY.NIGHT)}</span>
                             </div>
                         </div>
                     </section>
@@ -62,23 +73,23 @@ export function PricingModal() {
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="p-2 bg-amber-50 rounded border border-amber-100 flex justify-between">
                                 <span className="text-amber-800">L-V Día/Noc</span>
-                                <span className="font-bold text-amber-900">250.000 gs.</span>
+                                <span className="font-bold text-amber-900">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                             </div>
                             <div className="p-2 bg-amber-50 rounded border border-amber-100 flex justify-between">
                                 <span className="text-amber-800">Sáb Día</span>
-                                <span className="font-bold text-amber-900">300.000 gs.</span>
+                                <span className="font-bold text-amber-900">{formatCurrency(PRICING.COUPLE.SATURDAY.DAY)}</span>
                             </div>
                             <div className="p-2 bg-amber-50 rounded border border-amber-100 flex justify-between">
                                 <span className="text-amber-800">Sáb Noche</span>
-                                <span className="font-bold text-amber-900">400.000 gs.</span>
+                                <span className="font-bold text-amber-900">{formatCurrency(PRICING.COUPLE.SATURDAY.NIGHT)}</span>
                             </div>
                             <div className="p-2 bg-amber-50 rounded border border-amber-100 flex justify-between">
                                 <span className="text-amber-800">Dom Día</span>
-                                <span className="font-bold text-amber-900">400.000 gs.</span>
+                                <span className="font-bold text-amber-900">{formatCurrency(PRICING.COUPLE.SUNDAY.DAY)}</span>
                             </div>
                             <div className="p-2 bg-amber-50 rounded border border-amber-100 flex justify-between">
                                 <span className="text-amber-800">Dom Noche</span>
-                                <span className="font-bold text-amber-900">300.000 gs.</span>
+                                <span className="font-bold text-amber-900">{formatCurrency(PRICING.COUPLE.SUNDAY.NIGHT)}</span>
                             </div>
                         </div>
                     </section>

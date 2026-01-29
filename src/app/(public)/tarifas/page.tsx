@@ -3,8 +3,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Clock, Users, Star, ArrowRight } from "lucide-react"
+import { getPricingConfig } from "@/lib/actions"
+import { formatCurrency } from "@/lib/utils"
 
-export default function PricingPage() {
+export default async function PricingPage() {
+    const PRICING = await getPricingConfig();
+
     return (
         <main className="min-h-screen pt-32 pb-20 px-4 bg-muted/20">
             <div className="container mx-auto max-w-5xl">
@@ -39,14 +43,14 @@ export default function PricingPage() {
                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>09:00 a 18:00</span>
                                     </div>
-                                    <span className="font-black text-lg text-primary">500.000gs.</span>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.WEEKDAY.DAY)}</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>20:00 a 07:00</span>
                                     </div>
-                                    <span className="font-black text-lg text-primary">650.000gs.</span>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.WEEKDAY.NIGHT)}</span>
                                 </div>
                             </div>
 
@@ -59,14 +63,14 @@ export default function PricingPage() {
                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>09:00 a 18:00</span>
                                     </div>
-                                    <span className="font-black text-lg text-primary">700.000gs.</span>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.SATURDAY.DAY)}</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                     <div className="flex items-center gap-2 text-sm">
                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>20:00 a 07:00</span>
                                     </div>
-                                    <span className="font-black text-lg text-primary">800.000gs.</span>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.SATURDAY.NIGHT)}</span>
                                 </div>
                             </div>
 
@@ -79,7 +83,14 @@ export default function PricingPage() {
                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>09:00 a 18:00</span>
                                     </div>
-                                    <span className="font-black text-lg text-primary">800.000gs.</span>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.SUNDAY.DAY)}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Clock className="h-4 w-4 text-muted-foreground" />
+                                        <span>20:00 a 07:00</span>
+                                    </div>
+                                    <span className="font-black text-lg text-primary">{formatCurrency(PRICING.GENERAL.SUNDAY.NIGHT)}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -105,7 +116,7 @@ export default function PricingPage() {
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Lunes a Viernes</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
                                     <span className="text-sm font-medium">10:00 a 19:00 / 20:00 a 09:00</span>
-                                    <span className="font-black text-lg text-amber-700">250.000gs.</span>
+                                    <span className="font-black text-lg text-amber-700">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                                 </div>
                             </div>
 
@@ -113,11 +124,11 @@ export default function PricingPage() {
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Sábados</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
                                     <span className="text-sm font-medium">10:00 a 19:00</span>
-                                    <span className="font-black text-lg text-amber-700">300.000gs.</span>
+                                    <span className="font-black text-lg text-amber-700">{formatCurrency(PRICING.COUPLE.SATURDAY.DAY)}</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
                                     <span className="text-sm font-medium">20:00 a 09:00</span>
-                                    <span className="font-black text-lg text-amber-700">400.000gs.</span>
+                                    <span className="font-black text-lg text-amber-700">{formatCurrency(PRICING.COUPLE.SATURDAY.NIGHT)}</span>
                                 </div>
                             </div>
 
@@ -125,11 +136,11 @@ export default function PricingPage() {
                                 <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Domingos</h3>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
                                     <span className="text-sm font-medium">10:00 a 19:00</span>
-                                    <span className="font-black text-lg text-amber-700">400.000gs.</span>
+                                    <span className="font-black text-lg text-amber-700">{formatCurrency(PRICING.COUPLE.SUNDAY.DAY)}</span>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-amber-500/5 rounded-lg border border-amber-200">
                                     <span className="text-sm font-medium">20:00 a 09:00</span>
-                                    <span className="font-black text-lg text-amber-700">300.000gs.</span>
+                                    <span className="font-black text-lg text-amber-700">{formatCurrency(PRICING.COUPLE.SUNDAY.NIGHT)}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -138,7 +149,7 @@ export default function PricingPage() {
 
                 <div className="text-center">
                     <Button size="lg" className="rounded-full px-12 h-16 text-xl font-black shadow-2xl hover:scale-105 transition-all" asChild>
-                        <Link href="/reservations" className="flex items-center gap-3">
+                        <Link href="/reservar" className="flex items-center gap-3">
                             Quiero Reservar
                             <ArrowRight className="h-6 w-6" />
                         </Link>

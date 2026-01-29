@@ -48,6 +48,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
     guestName: z.string().min(2, "El nombre es obligatorio"),
@@ -62,22 +63,10 @@ type FormValues = z.infer<typeof formSchema>
 
 interface BookingWizardProps {
     unavailableSlots: { date: string; slot: string }[]
+    pricingConfig: any // Type this more strictly if needed
 }
 
-const PRICING = {
-    GENERAL: {
-        WEEKDAY: { DAY: 500000, NIGHT: 650000 },
-        SATURDAY: { DAY: 700000, NIGHT: 800000 },
-        SUNDAY: { DAY: 800000, NIGHT: 650000 },
-    },
-    COUPLE: {
-        WEEKDAY: { DAY: 250000, NIGHT: 250000 },
-        SATURDAY: { DAY: 300000, NIGHT: 400000 },
-        SUNDAY: { DAY: 400000, NIGHT: 300000 },
-    }
-}
-
-export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
+export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: BookingWizardProps) {
     const [step, setStep] = React.useState(1)
     const [currentMonth, setCurrentMonth] = React.useState(new Date())
     const [isPending, startTransition] = React.useTransition()
@@ -202,39 +191,77 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {/* MODALS */}
                     <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
-                        <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-8">
+                        <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
                             <DialogHeader className="mb-6">
-                                <DialogTitle className="text-3xl font-black tracking-tighter text-center">Leyenda de Disponibilidad</DialogTitle>
+                                <DialogTitle className="text-3xl font-black tracking-tighter text-center">Información de Reserva</DialogTitle>
                                 <DialogDescription className="text-center text-muted-foreground font-medium pt-2">
-                                    Colores y estados de las fechas en nuestro calendario.
+                                    Precios y estados de disponibilidad.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-4">
-                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
-                                    <div className="w-6 h-6 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 shrink-0" />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-black uppercase tracking-widest text-emerald-700">Disponible</span>
-                                        <span className="text-xs font-bold text-emerald-600/60 leading-tight">Día y Noche totalmente libres para reservar</span>
+
+                            <div className="space-y-6">
+                                {/* Pricing Summary Section */}
+                                <div className="space-y-3">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-primary/60 border-b pb-2 flex items-center gap-2">
+                                        <Users className="h-3 w-3" /> Resumen de Tarifas
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
+                                            <span className="font-bold text-muted-foreground">L-V</span>
+                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.WEEKDAY.DAY)}</span>
+                                        </div>
+                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
+                                            <span className="font-bold text-muted-foreground">Sábado</span>
+                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.SATURDAY.DAY)}</span>
+                                        </div>
+                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
+                                            <span className="font-bold text-muted-foreground">Domingo</span>
+                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.SUNDAY.DAY)}</span>
+                                        </div>
+                                        <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex justify-between items-center group hover:bg-amber-500/10 transition-colors">
+                                            <span className="font-bold text-amber-700">Parejas</span>
+                                            <span className="font-black text-amber-600">Desde {formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
+                                        </div>
                                     </div>
+                                    <p className="text-[9px] text-muted-foreground italic text-center">
+                                        * Precios base por turno. Los turnos noche o domingos pueden variar.
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-amber-400/5 border border-amber-400/10">
-                                    <div className="w-6 h-6 rounded-full bg-amber-400 shadow-lg shadow-amber-400/50 shrink-0" />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-black uppercase tracking-widest text-amber-700">Parcial</span>
-                                        <span className="text-xs font-bold text-amber-600/60 leading-tight">Solo queda 1 turno libre (Día o Noche)</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4 p-5 rounded-3xl bg-red-500/5 border border-red-500/10">
-                                    <div className="w-6 h-6 rounded-full bg-red-500 shadow-lg shadow-red-500/50 shrink-0" />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-black uppercase tracking-widest text-red-700">Ocupado</span>
-                                        <span className="text-xs font-bold text-red-600/60 leading-tight">Ambos turnos están reservados</span>
+
+                                {/* Legend Section */}
+                                <div className="space-y-3">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-primary/60 border-b pb-2 flex items-center gap-2">
+                                        <CalendarIcon className="h-3 w-3" /> Estados del Calendario
+                                    </h3>
+                                    <div className="grid gap-2">
+                                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 transition-all hover:scale-[1.02]">
+                                            <div className="w-4 h-4 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/30 shrink-0" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">Disponible</span>
+                                                <span className="text-[9px] font-bold text-emerald-600/60 leading-tight">Día y Noche libres</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-400/5 border border-amber-400/10 transition-all hover:scale-[1.02]">
+                                            <div className="w-4 h-4 rounded-full bg-amber-400 shadow-lg shadow-amber-400/30 shrink-0" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-700">Parcial</span>
+                                                <span className="text-[9px] font-bold text-amber-600/60 leading-tight">Solo 1 turno libre</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-red-500/5 border border-red-500/10 transition-all hover:scale-[1.02]">
+                                            <div className="w-4 h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/30 shrink-0" />
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-700">Ocupado</span>
+                                                <span className="text-[9px] font-bold text-red-600/60 leading-tight">Sin disponibilidad</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <Button
                                 onClick={() => setIsLegendOpen(false)}
-                                className="w-full mt-6 h-14 rounded-2xl text-lg font-black"
+                                className="w-full mt-6 h-12 rounded-2xl text-lg font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
                                 type="button"
                             >
                                 Entendido
@@ -521,7 +548,21 @@ export function BookingWizard({ unavailableSlots }: BookingWizardProps) {
                                                     <Smartphone size={14} /> WhatsApp
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="0981 123 456" className="h-14 rounded-2xl font-bold transition-all focus:ring-4 focus:ring-primary/10 border-muted-foreground/20 text-lg" {...field} />
+                                                    <Input
+                                                        placeholder="0981 123 456"
+                                                        className="h-14 rounded-2xl font-bold transition-all focus:ring-4 focus:ring-primary/10 border-muted-foreground/20 text-lg"
+                                                        {...field}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value.replace(/\D/g, "");
+                                                            let masked = val;
+                                                            if (val.length > 4 && val.length <= 7) {
+                                                                masked = `${val.slice(0, 4)} ${val.slice(4)}`;
+                                                            } else if (val.length > 7) {
+                                                                masked = `${val.slice(0, 4)} ${val.slice(4, 7)} ${val.slice(7, 10)}`;
+                                                            }
+                                                            field.onChange(masked);
+                                                        }}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

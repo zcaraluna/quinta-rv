@@ -232,9 +232,14 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                     <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] text-muted-foreground/80 italic text-center px-4 font-medium">
-                                                * El turno día comprende el horario de 09:00 a 18:00 hs.
-                                            </p>
+                                            <div className="grid grid-cols-2 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-bold text-primary/60">Grales: 09:00 - 18:00</span>
+                                                </div>
+                                                <div className="flex flex-col gap-0.5 text-right">
+                                                    <span className="font-bold text-amber-600/60">Parejas: 10:00 - 19:00</span>
+                                                </div>
+                                            </div>
                                         </TabsContent>
 
                                         <TabsContent value="night" className="space-y-4 pt-4">
@@ -256,9 +261,14 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                     <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] text-muted-foreground/80 italic text-center px-4 font-medium">
-                                                * El turno noche comprende el horario de 20:00 a 07:00 hs.
-                                            </p>
+                                            <div className="grid grid-cols-2 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-bold text-primary/60">Grales: 20:00 - 07:00</span>
+                                                </div>
+                                                <div className="flex flex-col gap-0.5 text-right">
+                                                    <span className="font-bold text-amber-600/60">Parejas: 20:00 - 09:00</span>
+                                                </div>
+                                            </div>
                                         </TabsContent>
                                     </Tabs>
                                 </div>

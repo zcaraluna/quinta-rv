@@ -91,17 +91,94 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Background Patterns */
-.bg-topo {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 800 800'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 617 120 480 9 344M902 466C863 451 824 436 785 421 704 391 623 361 542 331 462 301 382 271 302 241 223 211 144 181 65 151 58 148 51 145 44 142M77 800L170 616 263 432 356 248 449 64 457 46M797 0L800 850' stroke='%23000' stroke-opacity='0.1' fill='none' stroke-width='0.5'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+/* Animated Background Lines */
+.lines-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: auto;
+  width: 90vw;
+  z-index: -1;
+  pointer-events: none;
 }
 
-.bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.15;
-  mix-blend-mode: overlay;
-  pointer-events: none;
+.bg-line {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  background: color-mix(in oklch, var(--primary) 10%, transparent);
+  overflow: hidden;
+}
+
+.bg-line::after {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 15vh;
+  width: 100%;
+  top: -50%;
+  left: 0;
+  background: linear-gradient(to bottom,
+      transparent 0%,
+      var(--primary) 75%,
+      var(--primary) 100%);
+  animation: drop 7s 0s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+.bg-line:nth-child(1) {
+  margin-left: -45%;
+}
+
+.bg-line:nth-child(1)::after {
+  animation-delay: 2s;
+}
+
+.bg-line:nth-child(2) {
+  margin-left: -22.5%;
+}
+
+.bg-line:nth-child(2)::after {
+  animation-delay: 0.5s;
+}
+
+.bg-line:nth-child(3) {
+  margin-left: 0%;
+}
+
+.bg-line:nth-child(3)::after {
+  animation-delay: 5s;
+}
+
+.bg-line:nth-child(4) {
+  margin-left: 22.5%;
+}
+
+.bg-line:nth-child(4)::after {
+  animation-delay: 3s;
+}
+
+.bg-line:nth-child(5) {
+  margin-left: 45%;
+}
+
+.bg-line:nth-child(5)::after {
+  animation-delay: 1.5s;
+}
+
+@keyframes drop {
+  0% {
+    top: -50%;
+  }
+
+  100% {
+    top: 110%;
+  }
 }
 
 .dark {

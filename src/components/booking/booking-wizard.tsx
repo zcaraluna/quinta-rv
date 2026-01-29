@@ -48,6 +48,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
@@ -200,32 +201,66 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                             </DialogHeader>
 
                             <div className="space-y-6">
-                                {/* Pricing Summary Section */}
-                                <div className="space-y-3">
+                                {/* Pricing Summary Section with Tabs */}
+                                <div className="space-y-4">
                                     <h3 className="text-xs font-black uppercase tracking-widest text-primary/60 border-b pb-2 flex items-center gap-2">
-                                        <Users className="h-3 w-3" /> Resumen de Tarifas
+                                        <Users className="h-3 w-3" /> Tarifas de Reservación
                                     </h3>
-                                    <div className="grid grid-cols-2 gap-2 text-[11px]">
-                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
-                                            <span className="font-bold text-muted-foreground">L-V</span>
-                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.WEEKDAY.DAY)}</span>
-                                        </div>
-                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
-                                            <span className="font-bold text-muted-foreground">Sábado</span>
-                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.SATURDAY.DAY)}</span>
-                                        </div>
-                                        <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex justify-between items-center group hover:bg-muted/50 transition-colors">
-                                            <span className="font-bold text-muted-foreground">Domingo</span>
-                                            <span className="font-black text-primary">{formatCurrency(PRICING.GENERAL.SUNDAY.DAY)}</span>
-                                        </div>
-                                        <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex justify-between items-center group hover:bg-amber-500/10 transition-colors">
-                                            <span className="font-bold text-amber-700">Parejas</span>
-                                            <span className="font-black text-amber-600">Desde {formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-[9px] text-muted-foreground italic text-center">
-                                        * Precios base por turno. Los turnos noche o domingos pueden variar.
-                                    </p>
+
+                                    <Tabs defaultValue="day" className="w-full">
+                                        <TabsList className="grid w-full grid-cols-2 rounded-2xl h-12 bg-muted/50 p-1">
+                                            <TabsTrigger value="day" className="rounded-xl font-black text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-300">Turno Día</TabsTrigger>
+                                            <TabsTrigger value="night" className="rounded-xl font-black text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-300">Turno Noche</TabsTrigger>
+                                        </TabsList>
+
+                                        <TabsContent value="day" className="space-y-4 pt-4">
+                                            <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Lun a Vie</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.WEEKDAY.DAY)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Sábados</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.SATURDAY.DAY)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Domingos</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.SUNDAY.DAY)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex flex-col gap-1 hover:bg-amber-500/10 transition-colors">
+                                                    <span className="font-bold text-amber-700">Promo Pareja</span>
+                                                    <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] text-muted-foreground/80 italic text-center px-4 font-medium">
+                                                * El turno día comprende el horario de 09:00 a 18:00 hs.
+                                            </p>
+                                        </TabsContent>
+
+                                        <TabsContent value="night" className="space-y-4 pt-4">
+                                            <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Lun a Vie</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.WEEKDAY.NIGHT)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Sábados</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.SATURDAY.NIGHT)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-muted/30 border border-muted flex flex-col gap-1 hover:bg-muted/40 transition-colors">
+                                                    <span className="font-bold text-muted-foreground">Domingos</span>
+                                                    <span className="font-black text-primary text-sm">{formatCurrency(PRICING.GENERAL.SUNDAY.NIGHT)}</span>
+                                                </div>
+                                                <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex flex-col gap-1 hover:bg-amber-500/10 transition-colors">
+                                                    <span className="font-bold text-amber-700">Promo Pareja</span>
+                                                    <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] text-muted-foreground/80 italic text-center px-4 font-medium">
+                                                * El turno noche comprende el horario de 20:00 a 07:00 hs.
+                                            </p>
+                                        </TabsContent>
+                                    </Tabs>
                                 </div>
 
                                 {/* Legend Section */}

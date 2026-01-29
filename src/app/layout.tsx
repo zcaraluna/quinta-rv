@@ -21,6 +21,12 @@ export default function RootLayout({
       <body className={`${raleway.className} antialiased relative min-h-screen overflow-x-hidden bg-background`}>
         {/* Background Decorative Elements */}
         <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+          {/* Topographic Pattern Layer */}
+          <div className="absolute inset-0 bg-topo opacity-40" />
+
+          {/* Grain/Noise Layer */}
+          <div className="absolute inset-0 bg-grain" />
+
           {/* Large Amber Sphere */}
           <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] animate-pulse duration-[10s]" />
           {/* Large Greenish/Emerald Sphere */}

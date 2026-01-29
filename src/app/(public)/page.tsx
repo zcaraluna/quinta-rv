@@ -11,7 +11,7 @@ export default async function Home() {
     const pricingConfig = await getPricingConfig();
 
     return (
-        <main className="min-h-screen bg-background flex flex-col items-center">
+        <main className="min-h-screen flex flex-col items-center">
             {/* Split Hero Section */}
             <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[90vh]">
                 {/* Left Side: Content */}

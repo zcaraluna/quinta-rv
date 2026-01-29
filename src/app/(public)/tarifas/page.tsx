@@ -10,7 +10,7 @@ export default async function PricingPage() {
     const PRICING = await getPricingConfig();
 
     return (
-        <main className="min-h-screen pt-32 pb-20 px-4 bg-muted/20">
+        <main className="min-h-screen pt-32 pb-20 px-4 bg-transparent">
             <div className="container mx-auto max-w-5xl">
                 <header className="text-center mb-16">
                     <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">

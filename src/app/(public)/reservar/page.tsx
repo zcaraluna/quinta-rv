@@ -7,7 +7,7 @@ export default async function BookingPage() {
     const pricingConfig = await getPricingConfig();
 
     return (
-        <main className="min-h-screen pt-32 pb-20 px-4 bg-muted/20">
+        <main className="min-h-screen pt-32 pb-20 px-4 bg-transparent">
             <div className="container mx-auto max-w-4xl">
                 <BookingWizard
                     unavailableSlots={unavailableSlots}

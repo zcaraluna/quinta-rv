@@ -1,10 +1,15 @@
 import { PhotoReel } from "@/components/booking/photo-reel";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Instagram, MapPin, Phone, Mail, Facebook } from "lucide-react";
+import { Instagram, MapPin, Phone, Facebook } from "lucide-react";
+import { PricingModal } from "@/components/booking/pricing-modal";
+import { AmenitiesModal } from "@/components/booking/amenities-modal";
+import { getPricingConfig } from "@/lib/actions";
+import Image from "next/image";
 
 export default async function Home() {
+    const pricingConfig = await getPricingConfig();
+
     return (
         <main className="min-h-screen bg-background flex flex-col items-center">
             {/* Split Hero Section */}
@@ -29,12 +34,16 @@ export default async function Home() {
                         </p>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
                         <Link href="/reservar">
-                            <Button size="lg" className="rounded-full px-10 h-14 font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
+                            <Button size="lg" className="rounded-full px-10 h-16 font-black text-xl shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 w-full sm:w-auto">
                                 Reservar Ahora
                             </Button>
                         </Link>
+                        <div className="flex items-center gap-3">
+                            <AmenitiesModal />
+                            <PricingModal pricing={pricingConfig} />
+                        </div>
                     </div>
                 </div>
 

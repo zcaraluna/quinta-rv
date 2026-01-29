@@ -49,7 +49,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
     guestName: z.string().min(2, "El nombre es obligatorio"),

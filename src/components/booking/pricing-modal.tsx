@@ -22,8 +22,8 @@ export function PricingModal({ pricing }: PricingModalProps) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 text-xs h-8 rounded-xl font-bold border-primary/20 hover:border-primary/40 transition-all">
-                    <HelpCircle className="h-3.5 w-3.5 text-primary" />
+                <Button variant="outline" size="lg" className="rounded-full px-8 h-14 font-bold border-primary/20 hover:border-primary/40 transition-all gap-2">
+                    <HelpCircle className="h-5 w-5 text-primary" />
                     Ver Tarifas
                 </Button>
             </DialogTrigger>

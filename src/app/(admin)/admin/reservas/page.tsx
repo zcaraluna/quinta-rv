@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { desc, eq, and, sql, count, isNull } from "drizzle-orm";
+import { desc, eq, and, sql, count, isNull, ilike, or } from "drizzle-orm";
 import {
     Calendar,
     User,
@@ -31,6 +31,7 @@ import {
 import { BookingStatusBadge } from "@/components/admin/status-badge";
 import { BookingActions } from "@/components/admin/booking-actions";
 import { MaintenanceDialog } from "@/components/admin/maintenance-dialog";
+import { BookingSearch } from "@/components/admin/booking-search";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -40,22 +41,32 @@ const PAGE_SIZE = 10;
 export default async function BookingsPage({
     searchParams
 }: {
-    searchParams: Promise<{ page?: string; status?: string }>
+    searchParams: Promise<{ page?: string; status?: string; search?: string }>
 }) {
     const params = await searchParams;
     const currentPage = Number(params.page) || 1;
     const currentStatus = params.status || "ALL";
+    const currentSearch = params.search || "";
 
     // Build query conditions
     const conditions = [isNull(bookings.deletedAt)];
     if (currentStatus !== "ALL") {
         conditions.push(eq(bookings.status, currentStatus as any));
     }
+    if (currentSearch) {
+        conditions.push(
+            or(
+                ilike(bookings.guestName, `%${currentSearch}%`),
+                ilike(bookings.guestEmail, `%${currentSearch}%`),
+                ilike(bookings.guestWhatsapp, `%${currentSearch}%`)
+            )
+        );
+    }
 
     const whereClause = and(...conditions);
 
     // Fetch total count for pagination
-    const [totalRes] = await db.select({ value: count() }).from(bookings).where(whereClause);
+    const [totalRes] = await db.select({ value: count() }).from(bookings).where(whereClause || sql`1=1`);
     const totalBookings = totalRes.value;
     const totalPages = Math.ceil(totalBookings / PAGE_SIZE);
 
@@ -63,7 +74,7 @@ export default async function BookingsPage({
     const paginatedBookings = await db
         .select()
         .from(bookings)
-        .where(whereClause)
+        .where(whereClause || sql`1=1`)
         .orderBy(desc(bookings.createdAt))
         .limit(PAGE_SIZE)
         .offset((currentPage - 1) * PAGE_SIZE);
@@ -95,23 +106,26 @@ export default async function BookingsPage({
                 </div>
             </div>
 
-            {/* Filters Bar */}
-            <div className="flex flex-wrap items-center gap-2 bg-muted/30 p-2 rounded-2xl sm:rounded-3xl border w-full sm:w-fit mx-auto sm:mx-0">
-                {statuses.map((s) => (
-                    <Button
-                        key={s.value}
-                        variant={currentStatus === s.value ? "default" : "ghost"}
-                        className={cn(
-                            "h-10 px-6 rounded-2xl font-bold text-xs transition-all",
-                            currentStatus === s.value ? "shadow-lg shadow-primary/20 scale-105" : "hover:bg-muted"
-                        )}
-                        asChild
-                    >
-                        <Link href={`?status=${s.value}&page=1`}>
-                            {s.label}
-                        </Link>
-                    </Button>
-                ))}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <BookingSearch />
+                {/* Filters Bar */}
+                <div className="flex flex-wrap items-center gap-2 bg-muted/30 p-2 rounded-2xl sm:rounded-3xl border w-full lg:w-fit">
+                    {statuses.map((s) => (
+                        <Button
+                            key={s.value}
+                            variant={currentStatus === s.value ? "default" : "ghost"}
+                            className={cn(
+                                "h-10 px-6 rounded-2xl font-bold text-xs transition-all",
+                                currentStatus === s.value ? "shadow-lg shadow-primary/20 scale-105" : "hover:bg-muted"
+                            )}
+                            asChild
+                        >
+                            <Link href={`?status=${s.value}&page=1${currentSearch ? `&search=${currentSearch}` : ""}`}>
+                                {s.label}
+                            </Link>
+                        </Button>
+                    ))}
+                </div>
             </div>
 
             <div className="bg-card rounded-[2.5rem] border-none shadow-2xl shadow-muted/20 overflow-hidden">
@@ -208,7 +222,7 @@ export default async function BookingsPage({
                                 asChild={currentPage > 1}
                             >
                                 {currentPage > 1 ? (
-                                    <Link href={`?status=${currentStatus}&page=${currentPage - 1}`}>
+                                    <Link href={`?status=${currentStatus}&page=${currentPage - 1}${currentSearch ? `&search=${currentSearch}` : ""}`}>
                                         <ChevronLeft className="h-5 w-5" />
                                     </Link>
                                 ) : (
@@ -228,7 +242,7 @@ export default async function BookingsPage({
                                         asChild={currentPage !== i + 1}
                                     >
                                         {currentPage !== i + 1 ? (
-                                            <Link href={`?status=${currentStatus}&page=${i + 1}`}>
+                                            <Link href={`?status=${currentStatus}&page=${i + 1}${currentSearch ? `&search=${currentSearch}` : ""}`}>
                                                 {i + 1}
                                             </Link>
                                         ) : (
@@ -246,7 +260,7 @@ export default async function BookingsPage({
                                 asChild={currentPage < totalPages}
                             >
                                 {currentPage < totalPages ? (
-                                    <Link href={`?status=${currentStatus}&page=${currentPage + 1}`}>
+                                    <Link href={`?status=${currentStatus}&page=${currentPage + 1}${currentSearch ? `&search=${currentSearch}` : ""}`}>
                                         <ChevronRight className="h-5 w-5" />
                                     </Link>
                                 ) : (

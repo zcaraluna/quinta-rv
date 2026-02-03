@@ -54,13 +54,14 @@ export default async function BookingsPage({
         conditions.push(eq(bookings.status, currentStatus as any));
     }
     if (currentSearch) {
-        conditions.push(
-            or(
-                ilike(bookings.guestName, `%${currentSearch}%`),
-                ilike(bookings.guestEmail, `%${currentSearch}%`),
-                ilike(bookings.guestWhatsapp, `%${currentSearch}%`)
-            )
+        const searchCondition = or(
+            ilike(bookings.guestName, `%${currentSearch}%`),
+            ilike(bookings.guestEmail, `%${currentSearch}%`),
+            ilike(bookings.guestWhatsapp, `%${currentSearch}%`)
         );
+        if (searchCondition) {
+            conditions.push(searchCondition);
+        }
     }
 
     const whereClause = and(...conditions);

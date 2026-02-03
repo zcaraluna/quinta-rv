@@ -4,6 +4,7 @@ import { db } from './db';
 import { bookings } from './schema';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
+import { normalizePhone } from './utils';
 import { redirect } from 'next/navigation';
 import { addHours, format, getDay, startOfDay } from 'date-fns';
 import { and, gte, lte, or, eq, sql, isNull, desc, lt } from 'drizzle-orm';
@@ -63,7 +64,8 @@ export async function createBooking(prevState: any, formData: FormData) {
         return { error: "Datos inválidos." };
     }
 
-    const { guestName, guestEmail, guestWhatsapp, bookingDate, slot, isCouplePromo } = result.data;
+    const { guestName, guestEmail, guestWhatsapp: rawWhatsapp, bookingDate, slot, isCouplePromo } = result.data;
+    const guestWhatsapp = normalizePhone(rawWhatsapp);
 
     // 1. Check Availability for that day + slot
     const overlap = await db.select().from(bookings).where(
@@ -137,7 +139,8 @@ export async function createManualBooking(formData: FormData) {
         status: formData.get('status') || 'CONFIRMED',
     };
 
-    const { guestName, guestEmail, guestWhatsapp, bookingDate, slot, isCouplePromo, totalPrice, status } = rawData as any;
+    const { guestName, guestEmail, guestWhatsapp: rawWhatsapp, bookingDate, slot, isCouplePromo, totalPrice, status } = rawData as any;
+    const guestWhatsapp = normalizePhone(rawWhatsapp);
 
     await db.insert(bookings).values({
         guestName,

@@ -21,3 +21,7 @@ export function formatDate(date: Date | string) {
     year: 'numeric',
   }).format(d);
 }
+
+export function normalizePhone(phone: string) {
+  return phone.replace(/\D/g, '');
+}

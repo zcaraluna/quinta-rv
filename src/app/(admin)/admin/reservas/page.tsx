@@ -32,6 +32,7 @@ import { BookingStatusBadge } from "@/components/admin/status-badge";
 import { BookingActions } from "@/components/admin/booking-actions";
 import { MaintenanceDialog } from "@/components/admin/maintenance-dialog";
 import { BookingSearch } from "@/components/admin/booking-search";
+import { normalizePhone } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -54,11 +55,20 @@ export default async function BookingsPage({
         conditions.push(eq(bookings.status, currentStatus as any));
     }
     if (currentSearch) {
-        const searchCondition = or(
+        const normalizedSearch = normalizePhone(currentSearch);
+        const searchConditions = [
             ilike(bookings.guestName, `%${currentSearch}%`),
             ilike(bookings.guestEmail, `%${currentSearch}%`),
-            ilike(bookings.guestWhatsapp, `%${currentSearch}%`)
-        );
+        ];
+
+        // If it looks like a phone number or partial phone number, search normalized
+        if (normalizedSearch) {
+            searchConditions.push(
+                sql`regexp_replace(${bookings.guestWhatsapp}, '\D', '', 'g') ILIKE ${`%${normalizedSearch}%`}`
+            );
+        }
+
+        const searchCondition = or(...searchConditions);
         if (searchCondition) {
             conditions.push(searchCondition);
         }

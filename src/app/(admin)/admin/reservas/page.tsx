@@ -59,12 +59,13 @@ export default async function BookingsPage({
         const searchConditions = [
             ilike(bookings.guestName, `%${currentSearch}%`),
             ilike(bookings.guestEmail, `%${currentSearch}%`),
+            ilike(bookings.guestWhatsapp, `%${currentSearch}%`), // Match raw number too
         ];
 
-        // If it looks like a phone number or partial phone number, search normalized
+        // If it looks like a phone number or partial phone number, search normalized column
         if (normalizedSearch) {
             searchConditions.push(
-                sql`regexp_replace(${bookings.guestWhatsapp}, '\D', '', 'g') ILIKE ${`%${normalizedSearch}%`}`
+                sql`regexp_replace(${bookings.guestWhatsapp}, '[^0-9]', '', 'g') ILIKE ${`%${normalizedSearch}%`}`
             );
         }
 

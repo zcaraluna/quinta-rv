@@ -97,18 +97,20 @@ export default async function BookingsPage({
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">Gestión de Reservas</h1>
                     <p className="text-muted-foreground font-medium text-sm sm:text-base">Gestiona y filtra todas las solicitudes de la quinta.</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <MaintenanceDialog />
-                    <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20">
-                        <Link href="/admin/reservas/nuevo">
-                            <Plus className="mr-2 h-5 w-5" /> Nueva Reserva
-                        </Link>
-                    </Button>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <BookingSearch />
+                    <div className="flex items-center gap-3">
+                        <MaintenanceDialog />
+                        <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 flex-1 sm:flex-none">
+                            <Link href="/admin/reservas/nuevo">
+                                <Plus className="mr-2 h-5 w-5" /> Nueva Reserva
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <BookingSearch />
                 {/* Filters Bar */}
                 <div className="flex flex-wrap items-center gap-2 bg-muted/30 p-2 rounded-2xl sm:rounded-3xl border w-full lg:w-fit">
                     {statuses.map((s) => (

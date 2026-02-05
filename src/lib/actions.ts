@@ -124,7 +124,8 @@ export async function createBooking(prevState: any, formData: FormData) {
         console.error("Notification failed", e);
     }
 
-    redirect(`/estado/${newBooking.id}`);
+    // redirect(`/estado/${newBooking.id}`);
+    return { success: true, id: newBooking.id };
 }
 
 export async function createManualBooking(formData: FormData) {

@@ -137,6 +137,9 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
     const nextStep = () => setStep(prev => prev + 1)
     const prevStep = () => setStep(prev => prev - 1)
 
+    const [successBookingId, setSuccessBookingId] = React.useState<string | null>(null)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false)
+
     async function onSubmit(values: FormValues) {
         const formData = new FormData()
         formData.append("guestName", values.guestName)
@@ -148,12 +151,13 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
         formData.append("totalPrice", totalPrice.toString())
 
         startTransition(async () => {
-            const result = await createBooking(null, formData)
+            const result = await createBooking(null, formData) as { success: boolean, id: string, error?: string }
             if (result?.error) {
                 toast.error(result.error)
-            } else {
+            } else if (result?.success) {
+                setSuccessBookingId(result.id)
+                setIsSuccessModalOpen(true)
                 toast.success("Reserva iniciada exitosamente")
-                // Possibly redirect or show success step
             }
         })
     }
@@ -355,7 +359,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                                        <p className="text-muted-foreground font-medium">Tienes 4 horas para enviar el comprobante.</p>
+                                        <p className="text-muted-foreground font-medium">Tienes 1 hora para enviar el comprobante.</p>
                                     </li>
                                 </ul>
                                 <Button
@@ -367,6 +371,41 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                     type="button"
                                 >
                                     Entendido
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+                        <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-8" onPointerDownOutside={(e) => e.preventDefault()}>
+                            <DialogHeader className="mb-6">
+                                <div className="mx-auto w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                                    <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                                </div>
+                                <DialogTitle className="text-2xl font-black tracking-tighter text-center">¡Reserva Iniciada!</DialogTitle>
+                                <DialogDescription className="text-center font-bold text-emerald-800">
+                                    Estás un paso más cerca.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="space-y-6">
+                                <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 space-y-3">
+                                    <p className="text-xs text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest text-center">
+                                        ⚠️ ATENCIÓN: RESERVA PROVISORIA
+                                    </p>
+                                    <p className="text-sm text-amber-700 dark:text-amber-400 font-bold leading-relaxed">
+                                        Tu lugar solo está bloqueado temporalmente por <span className="underline">1 hora</span>. Si no envías el comprobante antes de que el tiempo se agote, la fecha se liberará y otra persona podrá ganarte el lugar.
+                                    </p>
+                                </div>
+
+                                <Button
+                                    onClick={() => {
+                                        window.location.href = `/estado/${successBookingId}`
+                                    }}
+                                    className="w-full h-14 rounded-2xl text-lg font-black shadow-lg shadow-primary/20"
+                                    type="button"
+                                >
+                                    Ir a pagar seña
                                 </Button>
                             </div>
                         </DialogContent>

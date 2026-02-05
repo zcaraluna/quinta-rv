@@ -26,6 +26,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
@@ -92,6 +99,9 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
 
     const totalPrice = calculatePrice()
 
+    const [successBookingId, setSuccessBookingId] = React.useState<string | null>(null)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false)
+
     function onSubmit(values: z.infer<typeof formSchema>) {
         const formData = new FormData()
         formData.append("guestName", values.guestName)
@@ -103,10 +113,12 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
         formData.append("totalPrice", totalPrice.toString())
 
         startTransition(async () => {
-            const result = await createBooking(null, formData)
+            const result = await createBooking(null, formData) as { success: boolean, id: string, error?: string }
             if (result?.error) {
                 toast.error(result.error)
-            } else {
+            } else if (result?.success) {
+                setSuccessBookingId(result.id)
+                setIsSuccessModalOpen(true)
                 toast.success("Reserva iniciada")
             }
         })
@@ -382,11 +394,46 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                             </div>
 
                             <p className="text-[10px] text-muted-foreground font-medium italic text-center mt-2 leading-tight">
-                                Para asegurar tu reserva, debes realizar el pago de la seña en un plazo no mayor a 4 horas.
+                                Para asegurar tu reserva, debes realizar el pago de la seña en un plazo no mayor a 1 hora.
                             </p>
                         </div>
                     </div>
                 )}
+
+                <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+                    <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-8" onPointerDownOutside={(e) => e.preventDefault()}>
+                        <DialogHeader className="mb-6">
+                            <div className="mx-auto w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                                <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                            </div>
+                            <DialogTitle className="text-2xl font-black tracking-tighter text-center">¡Reserva Iniciada!</DialogTitle>
+                            <DialogDescription className="text-center font-bold text-emerald-800">
+                                Estás un paso más cerca.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-6">
+                            <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 space-y-3">
+                                <p className="text-xs text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest text-center">
+                                    ⚠️ ATENCIÓN: RESERVA PROVISORIA
+                                </p>
+                                <p className="text-sm text-amber-700 dark:text-amber-400 font-bold leading-relaxed">
+                                    Tu lugar solo está bloqueado temporalmente por <span className="underline">1 hora</span>. Si no envías el comprobante antes de que el tiempo se agote, la fecha se liberará y otra persona podrá ganarte el lugar.
+                                </p>
+                            </div>
+
+                            <Button
+                                onClick={() => {
+                                    window.location.href = `/estado/${successBookingId}`
+                                }}
+                                className="w-full h-14 rounded-2xl text-lg font-black shadow-lg shadow-primary/20"
+                                type="button"
+                            >
+                                Ir a pagar seña
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
                 <Button type="submit" className="w-full h-14 rounded-xl text-lg font-black" disabled={isPending || !watchDate}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

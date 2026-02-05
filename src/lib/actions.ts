@@ -98,7 +98,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
     const PRICING = await getPricingConfig();
     const price = PRICING[type][dayType][slot];
-    const expiresAt = addHours(new Date(), 4);
+    const expiresAt = addHours(new Date(), 1);
 
     // 3. Create
     const [newBooking] = await db.insert(bookings).values({
@@ -178,7 +178,7 @@ export async function savePushSubscription(userId: string, subscription: any, us
 }
 
 export async function checkAndSendReminders() {
-    const oneHourFromNow = new Date(Date.now() + 1000 * 60 * 60);
+    const thirtyMinutesFromNow = new Date(Date.now() + 1000 * 60 * 30);
 
     // Find bookings that:
     // 1. Are PENDING_PAYMENT
@@ -191,7 +191,7 @@ export async function checkAndSendReminders() {
                 eq(bookings.status, 'PENDING_PAYMENT'),
                 eq(bookings.reminderSent, false),
                 isNull(bookings.deletedAt),
-                lt(bookings.expiresAt, oneHourFromNow),
+                lt(bookings.expiresAt, thirtyMinutesFromNow),
                 gte(bookings.expiresAt, new Date())
             )
         );
@@ -200,7 +200,7 @@ export async function checkAndSendReminders() {
         try {
             await sendAdminPushNotification({
                 title: "⚠️ Seña por Vencer",
-                body: `La reserva de ${booking.guestName} vence en menos de 1 hora.`,
+                body: `La reserva de ${booking.guestName} vence en menos de 30 minutos.`,
                 url: `${process.env.NEXT_PUBLIC_APP_URL}/admin/reservas?status=PENDING_PAYMENT`
             });
 

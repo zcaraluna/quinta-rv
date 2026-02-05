@@ -50,7 +50,7 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                         )}
                     </div>
                     <CardTitle className="text-2xl font-black">
-                        {isConfirmed ? "¡Pago Completado!" : isReserved ? "¡Reserva Confirmada!" : showPayment ? "Reserva Pendiente" : "Reserva Expirada"}
+                        {isConfirmed ? "¡Pago Completado!" : isReserved ? "¡Reserva Confirmada!" : showPayment ? "Reserva Provisoria" : "Reserva Expirada"}
                     </CardTitle>
                     <CardDescription className="font-mono text-xs">ID: {booking.id}</CardDescription>
                 </CardHeader>
@@ -58,11 +58,16 @@ export default async function StatusPage({ params }: { params: Promise<{ id: str
                 <CardContent className="space-y-6">
                     {/* Countdown Section */}
                     {showPayment && booking.expiresAt && (
-                        <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 text-center space-y-2">
-                            <p className="text-xs text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest">
-                                Tu pre-reserva expira en:
+                        <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-800 text-center space-y-3">
+                            <div className="space-y-1">
+                                <p className="text-[10px] text-amber-800 dark:text-amber-300 font-black uppercase tracking-widest">
+                                    Esta reserva expira en:
+                                </p>
+                                <CountdownTimer targetDate={booking.expiresAt} />
+                            </div>
+                            <p className="text-[10px] text-amber-700/70 dark:text-amber-400/70 font-bold leading-tight">
+                                Nota: Tu lugar solo está bloqueado temporalmente. Si no envías el comprobante antes de que el tiempo se agote, la fecha se liberará y otra persona podrá ganarte el lugar.
                             </p>
-                            <CountdownTimer targetDate={booking.expiresAt} />
                         </div>
                     )}
 

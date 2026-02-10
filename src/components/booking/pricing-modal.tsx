@@ -80,9 +80,8 @@ export function PricingModal({ pricing }: PricingModalProps) {
                         </div>
 
                         <div className="p-4 rounded-2xl bg-muted/30 border border-muted/50 text-center">
-                            <div className="grid grid-cols-2 gap-2 text-[11px] italic text-muted-foreground font-medium">
-                                <span className="text-primary/60 font-bold">Grales: 09:00 - 18:00</span>
-                                <span className="text-amber-600/60 font-bold">Parejas: 10:00 - 19:00</span>
+                            <div className="grid grid-cols-1 gap-2 text-[11px] italic text-muted-foreground font-medium text-center">
+                                <span className="text-primary/60 font-bold">Horario: 09:00 - 18:00</span>
                             </div>
                         </div>
                     </TabsContent>
@@ -129,9 +128,8 @@ export function PricingModal({ pricing }: PricingModalProps) {
                         </div>
 
                         <div className="p-4 rounded-2xl bg-muted/30 border border-muted/50 text-center">
-                            <div className="grid grid-cols-2 gap-2 text-[11px] italic text-muted-foreground font-medium">
-                                <span className="text-primary/60 font-bold">Grales: 20:00 - 07:00</span>
-                                <span className="text-amber-600/60 font-bold">Parejas: 20:00 - 09:00</span>
+                            <div className="grid grid-cols-1 gap-2 text-[11px] italic text-muted-foreground font-medium text-center">
+                                <span className="text-primary/60 font-bold">Horario: 20:00 - 07:00</span>
                             </div>
                         </div>
                     </TabsContent>

@@ -235,12 +235,9 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                     <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="font-bold text-primary/60">Grales: 09:00 - 18:00</span>
-                                                </div>
-                                                <div className="flex flex-col gap-0.5 text-right">
-                                                    <span className="font-bold text-amber-600/60">Parejas: 10:00 - 19:00</span>
+                                            <div className="grid grid-cols-1 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
+                                                <div className="flex flex-col gap-0.5 text-center">
+                                                    <span className="font-bold text-primary/60">Horario: 09:00 - 18:00</span>
                                                 </div>
                                             </div>
                                         </TabsContent>
@@ -264,12 +261,9 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                     <span className="font-black text-amber-600 text-sm">{formatCurrency(PRICING.COUPLE.WEEKDAY.DAY)}</span>
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="font-bold text-primary/60">Grales: 20:00 - 07:00</span>
-                                                </div>
-                                                <div className="flex flex-col gap-0.5 text-right">
-                                                    <span className="font-bold text-amber-600/60">Parejas: 20:00 - 09:00</span>
+                                            <div className="grid grid-cols-1 gap-2 text-[10px] mt-4 pt-4 border-t border-muted italic text-muted-foreground/80 font-medium">
+                                                <div className="flex flex-col gap-0.5 text-center">
+                                                    <span className="font-bold text-primary/60">Horario: 20:00 - 07:00</span>
                                                 </div>
                                             </div>
                                         </TabsContent>
@@ -554,7 +548,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Turno Día</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">
-                                                    {watchCouple ? "10:00 - 19:00" : "09:00 - 18:00"}
+                                                    09:00 - 18:00
                                                 </span>
                                             </label>
 
@@ -572,7 +566,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                                 </div>
                                                 <span className="text-2xl font-black tracking-tight">Turno Noche</span>
                                                 <span className="text-sm font-bold text-muted-foreground mt-2 uppercase tracking-widest">
-                                                    {watchCouple ? "20:00 - 09:00" : "20:00 - 07:00"}
+                                                    20:00 - 07:00
                                                 </span>
                                             </label>
                                         </RadioGroup>
@@ -709,7 +703,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                             {format(watchDate, "EEEE d 'de' MMMM", { locale: es })}
                                         </span >
                                         <span className="font-bold text-muted-foreground">
-                                            Turno {watchSlot === "DAY" ? "Día" : "Noche"} ({watchSlot === "DAY" ? (watchCouple ? "10:00 - 19:00" : "09:00 - 18:00") : (watchCouple ? "20:00 - 09:00" : "20:00 - 07:00")})
+                                            Turno {watchSlot === "DAY" ? "Día" : "Noche"} ({watchSlot === "DAY" ? "09:00 - 18:00" : "20:00 - 07:00"})
                                         </span>
                                     </div>
                                 </div>

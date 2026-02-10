@@ -146,12 +146,17 @@ export function CalendarView({ bookings }: CalendarViewProps) {
                                             </div>
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-muted/50">
-                                                <div className="flex items-center gap-2 text-sm">
-                                                    <div className="h-7 w-7 rounded-full bg-white flex items-center justify-center text-primary border border-muted/50 shadow-sm">
+                                                <a
+                                                    href={`https://wa.me/${booking.guestWhatsapp.replace(/\D/g, '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 text-sm hover:text-primary transition-colors group/link"
+                                                >
+                                                    <div className="h-7 w-7 rounded-full bg-white flex items-center justify-center text-primary border border-muted/50 shadow-sm group-hover/link:border-primary/30 group-hover/link:bg-primary/5 transition-all">
                                                         <Phone className="h-3.5 w-3.5" />
                                                     </div>
                                                     <span className="font-bold text-xs truncate select-all">{booking.guestWhatsapp}</span>
-                                                </div>
+                                                </a>
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <div className="h-7 w-7 rounded-full bg-white flex items-center justify-center text-primary border border-muted/50 shadow-sm">
                                                         <Mail className="h-3.5 w-3.5" />

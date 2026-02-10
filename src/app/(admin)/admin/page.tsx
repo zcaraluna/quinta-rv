@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { sql, count, sum, eq, gte, lte, and, or, isNull, desc } from "drizzle-orm";
+import { sql, count, sum, eq, gte, lte, and, or, isNull, desc, asc } from "drizzle-orm";
 import {
     CalendarRange,
     CreditCard,
@@ -9,6 +9,7 @@ import {
     Clock,
     CheckCircle2,
     XCircle,
+    Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -19,7 +20,8 @@ import {
     CardTitle
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export default async function AdminDashboard() {
     const now = new Date();
@@ -80,14 +82,38 @@ export default async function AdminDashboard() {
         ))
         .groupBy(bookings.slot, bookings.status);
 
+    // Monthly Statistics Card calculations...
     const monthTotal = monthlyStats.reduce((acc, s) => acc + s.count, 0);
     const monthDay = monthlyStats.reduce((acc, s) => s.slot === 'DAY' ? acc + s.count : acc, 0);
     const monthNight = monthlyStats.reduce((acc, s) => s.slot === 'NIGHT' ? acc + s.count : acc, 0);
     const monthCompleted = monthlyStats.reduce((acc, s) => s.status === 'COMPLETED' ? acc + s.count : acc, 0);
     const monthIncomplete = monthTotal - monthCompleted;
 
+    // Fetch today's bookings (Excluding MAINTENANCE and DELETED)
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+    const todayBookings = await db.select()
+        .from(bookings)
+        .where(and(
+            isNull(bookings.deletedAt),
+            sql`${bookings.status} != 'MAINTENANCE'`,
+            gte(bookings.bookingDate, todayStart),
+            lte(bookings.bookingDate, todayEnd)
+        ))
+        .orderBy(asc(bookings.slot));
+
+    // Filter out expired bookings from today's list
+    const activeTodayBookings = todayBookings.filter(b => {
+        if (b.status === "PENDING_PAYMENT" && b.expiresAt && now > new Date(b.expiresAt)) {
+            return false;
+        }
+        return true;
+    });
+
     // Fetch recent bookings (Excluding MAINTENANCE)
     const recentBookings = await db.select()
+        // ... (rest of the query remains same)
         .from(bookings)
         .where(and(
             isNull(bookings.deletedAt),
@@ -130,6 +156,87 @@ export default async function AdminDashboard() {
                     description="Listas para disfrutar"
                 />
             </div>
+
+            {/* Today's Reservations Card */}
+            <Card className="rounded-[2rem] border-none shadow-2xl bg-primary/5 overflow-hidden">
+                <CardHeader className="border-b border-primary/10 bg-white/50 backdrop-blur-sm">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                            <CardTitle className="font-black tracking-tight flex items-center gap-2 text-primary">
+                                <CalendarRange className="h-5 w-5" />
+                                Reservas de Hoy ({format(now, "d 'de' MMMM", { locale: es })})
+                            </CardTitle>
+                            <CardDescription className="font-medium">Huéspedes que ingresan en el transcurso del día.</CardDescription>
+                        </div>
+                        {activeTodayBookings.length > 0 && (
+                            <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm">
+                                {activeTodayBookings.length}
+                            </div>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x border-b md:border-b-0">
+                        {activeTodayBookings.length === 0 ? (
+                            <div className="col-span-full py-12 text-center text-muted-foreground font-medium italic">
+                                No hay reservas confirmadas para hoy.
+                            </div>
+                        ) : (
+                            activeTodayBookings.map((booking) => (
+                                <div key={booking.id} className="p-6 hover:bg-white/40 transition-colors flex flex-col gap-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-2xl bg-white shadow-sm flex items-center justify-center font-black text-primary border border-primary/10 text-lg">
+                                                {booking.guestName[0].toUpperCase()}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-black text-sm tracking-tight">{booking.guestName}</span>
+                                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                                    {booking.slot === 'DAY' ? (
+                                                        <>
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                                            Turno Día (09-18)
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                                                            Turno Noche (20-07)
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-tighter border",
+                                            booking.status === 'CONFIRMED' || booking.status === 'RESERVED' ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
+                                                booking.status === 'PENDING_PAYMENT' ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
+                                                    "bg-muted text-muted-foreground"
+                                        )}>
+                                            {booking.status === 'PENDING_PAYMENT' ? 'Pago Pendiente' :
+                                                booking.status === 'RESERVED' ? 'Reservado' :
+                                                    booking.status === 'CONFIRMED' ? 'Pagado' : booking.status}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-muted/50">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">WhatsApp</span>
+                                            <span className="text-xs font-black">{booking.guestWhatsapp}</span>
+                                        </div>
+                                        <a
+                                            href={`https://wa.me/${booking.guestWhatsapp.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="h-10 w-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 hover:scale-110 active:scale-95 transition-all"
+                                        >
+                                            <Phone className="h-5 w-5 fill-current" />
+                                        </a>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Recent Activity */}

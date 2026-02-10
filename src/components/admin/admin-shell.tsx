@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
     LayoutDashboard,
     CalendarDays,
+    Calendar,
     Settings,
     LogOut,
     Menu,
@@ -82,6 +83,7 @@ export function AdminShell({
 
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     <SidebarItem href="/admin" icon={<LayoutDashboard size={20} />} label="Dashboard" />
+                    <SidebarItem href="/admin/calendario" icon={<Calendar size={20} />} label="Calendario" />
                     <SidebarItem href="/admin/reservas" icon={<CalendarDays size={20} />} label="Reservas" />
                     <SidebarItem href="/admin/ajustes" icon={<Settings size={20} />} label="Ajustes" />
                 </nav>

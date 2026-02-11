@@ -8,7 +8,8 @@ const ALLOWED_IP = "181.91.86.248";
 
 export default async function BookingPage() {
     // Obtener IP desde los headers (x-forwarded-for, típico detrás de proxy/CDN)
-    const forwardedFor = headers().get("x-forwarded-for");
+    const headersList = await headers();
+    const forwardedFor = headersList.get("x-forwarded-for");
     const ip = forwardedFor?.split(",")[0]?.trim() || "";
 
     const isAllowed = ip === ALLOWED_IP;

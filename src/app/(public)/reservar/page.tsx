@@ -2,15 +2,13 @@ import { getUnavailableSlots, getPricingConfig } from "@/lib/actions";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { Toaster } from "@/components/ui/sonner";
 import BookingMaintenance from "./maintenance";
+import { headers } from "next/headers";
 
 const ALLOWED_IP = "181.91.86.248";
 
 export default async function BookingPage() {
-    // Obtener IP desde los headers (funciona en Vercel/Next con proxies comunes)
-    const forwardedFor = (process.env.NEXT_RUNTIME === "nodejs"
-        ? require("next/headers").headers().get("x-forwarded-for")
-        : null) as string | null;
-
+    // Obtener IP desde los headers (x-forwarded-for, típico detrás de proxy/CDN)
+    const forwardedFor = headers().get("x-forwarded-for");
     const ip = forwardedFor?.split(",")[0]?.trim() || "";
 
     const isAllowed = ip === ALLOWED_IP;

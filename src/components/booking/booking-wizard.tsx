@@ -145,7 +145,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
         formData.append("guestName", values.guestName)
         formData.append("guestEmail", values.guestEmail)
         formData.append("guestWhatsapp", values.guestWhatsapp)
-        formData.append("bookingDate", values.bookingDate.toISOString())
+        formData.append("bookingDate", format(values.bookingDate, "yyyy-MM-dd"))
         formData.append("slot", values.slot)
         formData.append("isCouplePromo", values.isCouplePromo.toString())
         formData.append("totalPrice", totalPrice.toString())
@@ -353,7 +353,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                                        <p className="text-muted-foreground font-medium">Tienes 1 hora para enviar el comprobante.</p>
+                                        <p className="text-muted-foreground font-medium">Tienes 30 minutos para enviar el comprobante.</p>
                                     </li>
                                 </ul>
                                 <Button
@@ -388,7 +388,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                         ⚠️ ATENCIÓN: RESERVA PROVISORIA
                                     </p>
                                     <p className="text-sm text-amber-700 dark:text-amber-400 font-bold leading-relaxed">
-                                        Tu lugar solo está bloqueado temporalmente por <span className="underline">1 hora</span>. Si no envías el comprobante antes de que el tiempo se agote, la fecha se liberará y otra persona podrá ganarte el lugar.
+                                        Tu lugar solo está bloqueado temporalmente por <span className="underline">30 minutos</span>. Si no envías el comprobante antes de que el tiempo se agote, la fecha se liberará y otra persona podrá ganarte el lugar.
                                     </p>
                                 </div>
 

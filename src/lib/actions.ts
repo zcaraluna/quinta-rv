@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { normalizePhone } from './utils';
 import { redirect } from 'next/navigation';
-import { addHours, format, getDay, startOfDay } from 'date-fns';
+import { addHours, addMinutes, format, getDay, parseISO, startOfDay } from 'date-fns';
 import { and, gte, lte, or, eq, sql, isNull, desc, lt } from 'drizzle-orm';
 import { sendAdminPushNotification } from './notifications';
 import { pushSubscriptions } from './schema';
@@ -48,12 +48,30 @@ const bookingSchema = z.object({
     isCouplePromo: z.boolean(),
 });
 
+export async function cleanupExpiredBookings() {
+    // Grace period of 30 minutes after expiration
+    const gracePeriodLimit = addMinutes(new Date(), -30);
+
+    await db.update(bookings)
+        .set({ deletedAt: new Date() })
+        .where(
+            and(
+                eq(bookings.status, 'PENDING_PAYMENT'),
+                isNull(bookings.deletedAt),
+                lt(bookings.expiresAt, gracePeriodLimit)
+            )
+        );
+}
+
 export async function createBooking(prevState: any, formData: FormData) {
+    await cleanupExpiredBookings();
+
+    const bookingDateStr = formData.get('bookingDate') as string;
     const rawData = {
         guestName: formData.get('guestName'),
         guestEmail: formData.get('guestEmail'),
         guestWhatsapp: formData.get('guestWhatsapp'),
-        bookingDate: new Date(formData.get('bookingDate') as string),
+        bookingDate: bookingDateStr.includes('T') ? new Date(bookingDateStr) : parseISO(bookingDateStr),
         slot: formData.get('slot'),
         isCouplePromo: formData.get('isCouplePromo') === "true",
     };
@@ -98,7 +116,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
     const PRICING = await getPricingConfig();
     const price = PRICING[type][dayType][slot];
-    const expiresAt = addHours(new Date(), 1);
+    const expiresAt = addMinutes(new Date(), 30);
 
     // 3. Create
     const [newBooking] = await db.insert(bookings).values({
@@ -129,11 +147,12 @@ export async function createBooking(prevState: any, formData: FormData) {
 }
 
 export async function createManualBooking(formData: FormData) {
+    const bookingDateStr = formData.get('bookingDate') as string;
     const rawData = {
         guestName: formData.get('guestName'),
         guestEmail: formData.get('guestEmail'),
         guestWhatsapp: formData.get('guestWhatsapp'),
-        bookingDate: new Date(formData.get('bookingDate') as string),
+        bookingDate: bookingDateStr.includes('T') ? new Date(bookingDateStr) : parseISO(bookingDateStr),
         slot: formData.get('slot'),
         isCouplePromo: formData.get('isCouplePromo') === "true",
         totalPrice: formData.get('totalPrice'),
@@ -232,6 +251,8 @@ export async function getRecentPendingBookings() {
 }
 
 export async function getUnavailableSlots() {
+    await cleanupExpiredBookings();
+
     const activeBookings = await db.select({
         date: bookings.bookingDate,
         slot: bookings.slot
@@ -279,7 +300,7 @@ export async function deleteBooking(id: string) {
 }
 
 export async function createMaintenance(date: string) {
-    const bookingDate = startOfDay(new Date(date));
+    const bookingDate = startOfDay(date.includes('T') ? new Date(date) : parseISO(date));
 
     // Create maintenance for both slots
     await db.insert(bookings).values([

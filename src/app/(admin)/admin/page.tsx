@@ -23,7 +23,10 @@ import { formatCurrency } from "@/lib/utils";
 import { startOfMonth, endOfMonth, format } from "date-fns";
 import { es } from "date-fns/locale";
 
+import { cleanupExpiredBookings } from "@/lib/actions";
+
 export default async function AdminDashboard() {
+    await cleanupExpiredBookings();
     const now = new Date();
     const thisMonthStart = startOfMonth(now);
     const thisMonthEnd = endOfMonth(now);

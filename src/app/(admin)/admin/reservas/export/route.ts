@@ -25,7 +25,7 @@ export async function GET() {
   ];
 
   const rows = exported.map((b) => {
-    const fecha = b.bookingDate ? format(b.bookingDate, "yyyy-MM-dd") : "";
+    const fecha = b.bookingDate ? format(b.bookingDate, "dd/MM/yyyy") : "";
     const turno = b.slot === "DAY" ? "Día" : "Noche";
     const estado =
       b.status === "RESERVED"

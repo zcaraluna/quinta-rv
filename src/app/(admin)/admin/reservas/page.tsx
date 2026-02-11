@@ -112,6 +112,15 @@ export default async function BookingsPage({
                     <BookingSearch />
                     <div className="flex items-center gap-3">
                         <MaintenanceDialog />
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="h-14 px-6 rounded-2xl font-black text-xs sm:text-sm"
+                        >
+                            <Link href="/admin/reservas/export">
+                                Exportar CSV
+                            </Link>
+                        </Button>
                         <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 flex-1 sm:flex-none">
                             <Link href="/admin/reservas/nuevo">
                                 <Plus className="mr-2 h-5 w-5" /> Nueva Reserva

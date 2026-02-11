@@ -17,8 +17,12 @@ import {
     TabsList,
     TabsTrigger
 } from "@/components/ui/tabs";
+import { auth } from "@/auth";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function SettingsPage() {
+    const session = await auth();
     const allSettings = await db.select().from(settings);
     const allUsers = await db.select().from(usersSchema);
 
@@ -50,10 +54,37 @@ export default async function SettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="general">
-                    <div className="bg-card rounded-[2.5rem] p-12 text-center border-none shadow-xl shadow-muted/20">
-                        <ShieldCheck size={48} className="mx-auto text-primary mb-4 opacity-20" />
-                        <h3 className="text-xl font-black tracking-tight mb-2">Configuración de Seguridad</h3>
-                        <p className="text-muted-foreground font-medium italic">Sección en desarrollo. Aquí podrás cambiar contraseñas y gestionar accesos.</p>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="bg-card rounded-[2.5rem] p-12 text-center border-none shadow-xl shadow-muted/20">
+                            <ShieldCheck size={48} className="mx-auto text-primary mb-4 opacity-20" />
+                            <h3 className="text-xl font-black tracking-tight mb-2">Configuración de Seguridad</h3>
+                            <p className="text-muted-foreground font-medium italic">
+                                Sección en desarrollo. Aquí podrás cambiar contraseñas y gestionar accesos.
+                            </p>
+                        </div>
+
+                        {session?.user?.username === "Admin" && (
+                            <div className="bg-card rounded-[2.5rem] p-12 border-dashed border-2 border-primary/20 text-center shadow-xl shadow-primary/10 flex flex-col items-center justify-center gap-4">
+                                <h3 className="text-xl font-black tracking-tight mb-1">
+                                    Herramientas Exclusivas de Admin
+                                </h3>
+                                <p className="text-muted-foreground font-medium max-w-md mx-auto">
+                                    Descarga un archivo CSV con todas las reservas registradas en el sistema
+                                    para analizar los datos en Excel u otras herramientas.
+                                </p>
+                                <Button
+                                    asChild
+                                    className="mt-2 h-12 px-8 rounded-full font-black text-sm"
+                                >
+                                    <Link href="/admin/reservas/export">
+                                        Descargar CSV de Reservas
+                                    </Link>
+                                </Button>
+                                <p className="text-[10px] text-muted-foreground/70 uppercase tracking-widest mt-2">
+                                    Solo visible para el usuario Admin
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </TabsContent>
 

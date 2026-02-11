@@ -63,7 +63,7 @@ export default async function SettingsPage() {
                             </p>
                         </div>
 
-                        {session?.user?.username === "Admin" && (
+                        {(session?.user?.username?.toLowerCase() === "admin" || session?.user?.role === "ADMIN") && (
                             <div className="bg-card rounded-[2.5rem] p-12 border-dashed border-2 border-primary/20 text-center shadow-xl shadow-primary/10 flex flex-col items-center justify-center gap-4">
                                 <h3 className="text-xl font-black tracking-tight mb-1">
                                     Herramientas Exclusivas de Admin

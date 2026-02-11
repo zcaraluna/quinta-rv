@@ -67,11 +67,16 @@ export async function createBooking(prevState: any, formData: FormData) {
     await cleanupExpiredBookings();
 
     const bookingDateStr = formData.get('bookingDate') as string;
+    // Normalizar la fecha al mediodía UTC para evitar desfases al convertir entre zonas horarias
+    // Siempre trabajamos solo con el "día" (sin importar la hora real de entrada del usuario).
+    const datePart = bookingDateStr.split('T')[0];
+    const normalizedBookingDate = new Date(`${datePart}T12:00:00Z`);
+
     const rawData = {
         guestName: formData.get('guestName'),
         guestEmail: formData.get('guestEmail'),
         guestWhatsapp: formData.get('guestWhatsapp'),
-        bookingDate: bookingDateStr.includes('T') ? new Date(bookingDateStr) : parseISO(bookingDateStr),
+        bookingDate: normalizedBookingDate,
         slot: formData.get('slot'),
         isCouplePromo: formData.get('isCouplePromo') === "true",
     };
@@ -88,7 +93,7 @@ export async function createBooking(prevState: any, formData: FormData) {
     // 1. Check Availability for that day + slot
     const overlap = await db.select().from(bookings).where(
         and(
-            eq(bookings.bookingDate, startOfDay(bookingDate)),
+            eq(bookings.bookingDate, bookingDate),
             eq(bookings.slot, slot),
             isNull(bookings.deletedAt),
             or(
@@ -123,7 +128,7 @@ export async function createBooking(prevState: any, formData: FormData) {
         guestName,
         guestEmail,
         guestWhatsapp,
-        bookingDate: startOfDay(bookingDate),
+        bookingDate,
         slot,
         isCouplePromo: isCouplePromo.toString(),
         totalPrice: price.toString(),
@@ -148,11 +153,14 @@ export async function createBooking(prevState: any, formData: FormData) {
 
 export async function createManualBooking(formData: FormData) {
     const bookingDateStr = formData.get('bookingDate') as string;
+    const datePart = bookingDateStr.split('T')[0];
+    const normalizedBookingDate = new Date(`${datePart}T12:00:00Z`);
+
     const rawData = {
         guestName: formData.get('guestName'),
         guestEmail: formData.get('guestEmail'),
         guestWhatsapp: formData.get('guestWhatsapp'),
-        bookingDate: bookingDateStr.includes('T') ? new Date(bookingDateStr) : parseISO(bookingDateStr),
+        bookingDate: normalizedBookingDate,
         slot: formData.get('slot'),
         isCouplePromo: formData.get('isCouplePromo') === "true",
         totalPrice: formData.get('totalPrice'),
@@ -166,7 +174,7 @@ export async function createManualBooking(formData: FormData) {
         guestName,
         guestEmail,
         guestWhatsapp,
-        bookingDate: startOfDay(bookingDate),
+        bookingDate,
         slot,
         isCouplePromo: isCouplePromo.toString(),
         totalPrice: totalPrice.toString(),
@@ -300,7 +308,8 @@ export async function deleteBooking(id: string) {
 }
 
 export async function createMaintenance(date: string) {
-    const bookingDate = startOfDay(date.includes('T') ? new Date(date) : parseISO(date));
+    const datePart = date.split('T')[0];
+    const bookingDate = new Date(`${datePart}T12:00:00Z`);
 
     // Create maintenance for both slots
     await db.insert(bookings).values([

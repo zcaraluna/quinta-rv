@@ -307,6 +307,24 @@ export async function deleteBooking(id: string) {
     return { success: true };
 }
 
+export async function reassignBooking(id: string, newDateStr: string, newSlot: 'DAY' | 'NIGHT') {
+    const datePart = newDateStr.split('T')[0];
+    const normalizedDate = new Date(`${datePart}T12:00:00Z`);
+
+    await db.update(bookings)
+        .set({
+            bookingDate: normalizedDate,
+            slot: newSlot,
+            deletedAt: null // Ensure it's active if it was accidentally soft-deleted
+        })
+        .where(eq(bookings.id, id));
+
+    revalidatePath('/admin/reservas');
+    revalidatePath('/admin/calendario');
+    revalidatePath('/');
+    return { success: true };
+}
+
 export async function createMaintenance(date: string) {
     const datePart = date.split('T')[0];
     const bookingDate = new Date(`${datePart}T12:00:00Z`);

@@ -1,0 +1,6 @@
+[dotenv@17.2.3] injecting env (22) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Bookings for 2026-02-13:
+- ID: c35ecb6a-567c-4d13-b13f-0fda8ee2c3ff | Name: MARCELO GONZALEZ | Slot: NIGHT
+- ID: 957b3acb-2350-4a97-905b-ecb4e59cfa86 | Name: MARCELO GON  | Slot: NIGHT
+- ID: a50f21c9-1f5a-4e21-8dbc-46f12f025023 | Name: ALESSANDRA THAIS DUARTE ARROYO | Slot: DAY
+- ID: e1a8b035-34e4-4a41-9617-4e77ffc6cfa0 | Name: RESERVADO POR EL ADMIN | Slot: NIGHT

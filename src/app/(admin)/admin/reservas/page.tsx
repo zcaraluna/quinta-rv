@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { desc, eq, and, sql, count, isNull, ilike, or } from "drizzle-orm";
+import { desc, eq, and, sql, count, isNull, ilike, or, gte } from "drizzle-orm";
 import {
     Calendar,
     User,
@@ -91,6 +91,33 @@ export default async function BookingsPage({
         .limit(PAGE_SIZE)
         .offset((currentPage - 1) * PAGE_SIZE);
 
+    // Conflict detection logic: Find if any of these bookings overlap with others
+    const conflictChecks = await Promise.all(
+        paginatedBookings.map(async (b) => {
+            const overlaps = await db.select({ count: count() })
+                .from(bookings)
+                .where(
+                    and(
+                        eq(bookings.bookingDate, b.bookingDate),
+                        eq(bookings.slot, b.slot),
+                        isNull(bookings.deletedAt),
+                        or(
+                            or(eq(bookings.status, 'CONFIRMED'),
+                                or(eq(bookings.status, 'RESERVED'),
+                                    eq(bookings.status, 'MAINTENANCE'))),
+                            and(
+                                eq(bookings.status, 'PENDING_PAYMENT'),
+                                gte(bookings.expiresAt, new Date())
+                            )
+                        )
+                    )
+                );
+            return { id: b.id, isConflict: overlaps[0].count > 1 };
+        })
+    );
+
+    const conflictMap = new Map(conflictChecks.map(c => [c.id, c.isConflict]));
+
     const statuses = [
         { label: "Todas", value: "ALL" },
         { label: "Pendientes", value: "PENDING_PAYMENT" },
@@ -177,7 +204,14 @@ export default async function BookingsPage({
                                 <TableRow key={booking.id} className="hover:bg-muted/10 border-b group">
                                     <TableCell className="py-6 px-8">
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{booking.guestName}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{booking.guestName}</span>
+                                                {conflictMap.get(booking.id) && (
+                                                    <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-sm h-fit">
+                                                        CONFLICTO
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="flex flex-wrap items-center gap-4 mt-2">
                                                 <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
                                                     <Phone className="h-3.5 w-3.5" /> {booking.guestWhatsapp}
@@ -222,7 +256,13 @@ export default async function BookingsPage({
                                         })()}
                                     </TableCell>
                                     <TableCell className="py-6 px-8 text-right">
-                                        <BookingActions bookingId={booking.id} currentStatus={booking.status} />
+                                        <BookingActions
+                                            bookingId={booking.id}
+                                            currentStatus={booking.status}
+                                            guestName={booking.guestName}
+                                            bookingDate={booking.bookingDate}
+                                            slot={booking.slot}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))

@@ -1,0 +1,12 @@
+[dotenv@17.2.3] injecting env (22) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Processing 21 records from CSV...
+[SKIP] YENIFER PEREZ TORRES already at 2026-02-16 (NIGHT)
+[UPDATE] Moving CLARA YAMILI TINDEL from 2026-02-19 (NIGHT) to 2026-02-20 (NIGHT)
+[UPDATE] Moving EDGAR INSFRAN from 2026-02-20 (DAY) to 2026-02-21 (DAY)
+[SKIP] SERGIO ISAAC GONZALEZ ROLON already at 2026-02-21 (NIGHT)
+[SKIP] MARÍA ELIZABETH VILLALBA already at 2026-02-22 (DAY)
+[SKIP] ALAN A. FRANCO TRINIDAD already at 2026-02-24 (DAY)
+[SKIP] Lili already at 2026-04-24 (DAY)
+[SKIP] SERGIO DANIEL CABALLERO already at 2026-02-27 (DAY)
+[SKIP] MAURICIO NICOLAS RODRIGUEZ already at 2026-02-27 (NIGHT)
+[SKIP] MAURICIO RDRIGUEZ already at 2026-02-28 (DAY)

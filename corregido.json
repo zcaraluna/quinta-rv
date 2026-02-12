@@ -1,0 +1,217 @@
+[
+  {
+    "Nombre": "ALESSANDRA THAIS DUARTE ARROYO",
+    "Telefono": "0982 961 314",
+    "Fecha y Turno": "12/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "13/02 - día",
+    "Fecha": "13/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "MARCELO GONZALEZ",
+    "Telefono": "0972 483 853",
+    "Fecha y Turno": "12/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "13/02 - noche",
+    "Fecha": "13/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "BELÉN BOGADO",
+    "Telefono": "0983 911 059",
+    "Fecha y Turno": "13/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "14/02 - día",
+    "Fecha": "14/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "OCUPADO POR EL SISTEMA",
+    "Telefono": "",
+    "Fecha y Turno": "13/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "CONSULTAR TITULAR",
+    "Fecha": "13/02/2026",
+    "Slot": "1",
+    "DUPLICATE": true,
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "RESERVADO POR EL ADMIN",
+    "Telefono": "",
+    "Fecha y Turno": "14/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "CONSULTAR TITULAR",
+    "Fecha": "14/02/2026",
+    "Slot": "0",
+    "DUPLICATE": true,
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "RESERVADO POR EL ADMIN",
+    "Telefono": "",
+    "Fecha y Turno": "14/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "CONSULTAR TITULAR",
+    "Fecha": "14/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "JOSE DANIEL VILLAMIL OSORIO",
+    "Telefono": "0982 804 066",
+    "Fecha y Turno": "15/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "16/02 - noche",
+    "Fecha": "16/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "YENIFER PEREZ TORRES",
+    "Telefono": "0972 375 564",
+    "Fecha y Turno": "16/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "confirmado",
+    "Fecha": "16/02/2026",
+    "Slot": "1",
+    "DUPLICATE": true,
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "MARCELINO MARTINEZ",
+    "Telefono": "0991 853 752",
+    "Fecha y Turno": "18/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "",
+    "Fecha": "19/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "CLARA YAMILI TINDEL",
+    "Telefono": "0992 187 378",
+    "Fecha y Turno": "19/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "20/02 - noche",
+    "Fecha": "20/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "EDGAR INSFRAN",
+    "Telefono": "0982 324 862",
+    "Fecha y Turno": "20/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "21/02 - día",
+    "Fecha": "21/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "SERGIO ISAAC GONZALEZ ROLON",
+    "Telefono": "0971 741 292",
+    "Fecha y Turno": "20/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "21/02 - noche",
+    "Fecha": "21/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "MARÍA ELIZABETH VILLALBA",
+    "Telefono": "0984 640 471",
+    "Fecha y Turno": "21/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "22/02 - día (consultó sobre el pago de la segunda mitad de su reserva)",
+    "Fecha": "22/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "ALAN A. FRANCO TRINIDAD",
+    "Telefono": "0983 622 543",
+    "Fecha y Turno": "24/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "solicitó cancelar",
+    "Fecha": "24/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "Lili",
+    "Telefono": "0982 336 705",
+    "Fecha y Turno": "24/04/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "confirmado",
+    "Fecha": "24/04/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "Lili",
+    "Telefono": "0982 336 705",
+    "Fecha y Turno": "24/04/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "confirmado",
+    "Fecha": "24/04/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "JOHANA PERALTA",
+    "Telefono": "0992 375 144",
+    "Fecha y Turno": "26/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "27/02 - día",
+    "Fecha": "27/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "AZUCENA PEREZ",
+    "Telefono": "0986 631 232",
+    "Fecha y Turno": "26/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "27/02 - noche",
+    "Fecha": "27/02/2026",
+    "Slot": "1",
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "SERGIO DANIEL CABALLERO",
+    "Telefono": "0984 590 405",
+    "Fecha y Turno": "27/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "confirmado",
+    "Fecha": "27/02/2026",
+    "Slot": "0",
+    "DUPLICATE": true,
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "MAURICIO NICOLAS RODRIGUEZ",
+    "Telefono": "0971 697 004",
+    "Fecha y Turno": "27/02/2026 - Noche",
+    "Estado": "Reservado",
+    "Respuesta": "confirmado? Preguntar al dueño",
+    "Fecha": "27/02/2026",
+    "Slot": "1",
+    "DUPLICATE": true,
+    "Status": "RESERVED"
+  },
+  {
+    "Nombre": "MAURICIO RDRIGUEZ",
+    "Telefono": "0981 623 777",
+    "Fecha y Turno": "28/02/2026 - Día",
+    "Estado": "Reservado",
+    "Respuesta": "preguntar al dueño",
+    "Fecha": "28/02/2026",
+    "Slot": "0",
+    "Status": "RESERVED"
+  }
+]

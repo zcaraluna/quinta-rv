@@ -1,0 +1,3 @@
+[dotenv@17.2.3] injecting env (22) from .env.local -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Searching for records with (TEMP) in names...
+No records with (TEMP) found.

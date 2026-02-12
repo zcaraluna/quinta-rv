@@ -12,11 +12,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -44,6 +39,7 @@ export function ReassignDialog({
     const [date, setDate] = useState<Date | undefined>(new Date(currentDate));
     const [slot, setSlot] = useState<'DAY' | 'NIGHT'>(currentSlot);
     const [isLoading, setIsLoading] = useState(false);
+    const [calendarOpen, setCalendarOpen] = useState(false);
     const router = useRouter();
 
     async function handleConfirm() {
@@ -67,7 +63,7 @@ export function ReassignDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="rounded-[2.5rem] sm:max-w-[425px] overflow-hidden p-0 border-none shadow-2xl">
+            <DialogContent className="rounded-[2.5rem] sm:max-w-[425px] overflow-y-auto max-h-[90vh] p-0 border-none shadow-2xl">
                 <DialogHeader className="p-8 bg-muted/30">
                     <DialogTitle className="text-2xl font-black flex items-center gap-2">
                         <ArrowRightLeft className="h-6 w-6 text-primary" />
@@ -81,29 +77,31 @@ export function ReassignDialog({
                 <div className="p-8 space-y-6">
                     <div className="space-y-2">
                         <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Nueva Fecha</p>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full h-12 justify-start text-left font-bold rounded-xl border-2",
-                                        !date && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-5 w-5" />
-                                    {date ? format(date, "PPP", { locale: es }) : <span>Selecciona un día</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden" align="start" side="top">
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-full h-12 justify-start text-left font-bold rounded-xl border-2",
+                                !date && "text-muted-foreground"
+                            )}
+                            onClick={() => setCalendarOpen(!calendarOpen)}
+                        >
+                            <CalendarIcon className="mr-2 h-5 w-5" />
+                            {date ? format(date, "PPP", { locale: es }) : <span>Selecciona un día</span>}
+                        </Button>
+                        {calendarOpen && (
+                            <div className="flex justify-center pt-2">
                                 <Calendar
                                     mode="single"
                                     selected={date}
-                                    onSelect={setDate}
-                                    initialFocus
+                                    onSelect={(d) => {
+                                        setDate(d);
+                                        setCalendarOpen(false);
+                                    }}
                                     locale={es}
+                                    className="rounded-2xl border"
                                 />
-                            </PopoverContent>
-                        </Popover>
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2">

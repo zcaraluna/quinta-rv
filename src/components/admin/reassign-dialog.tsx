@@ -94,7 +94,7 @@ export function ReassignDialog({
                                     {date ? format(date, "PPP", { locale: es }) : <span>Selecciona un día</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden" align="start">
+                            <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden" align="start" side="top">
                                 <Calendar
                                     mode="single"
                                     selected={date}

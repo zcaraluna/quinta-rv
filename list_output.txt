@@ -1,8 +1,0 @@
-[dotenv@17.2.3] injecting env (22) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
-Checking active bookings for Feb 14 and Feb 22...
-
-Date: 2026-02-14
-  - ID: e3f57723-0f43-490a-a714-19a6557894a5 | Name: BELÉN BOGADO | Date: 2026-02-14T15:00:00.000Z | Slot: DAY
-
-Date: 2026-02-22
-  - ID: ec5bd406-0bee-4b7e-b993-dda6e5acde35 | Name: MARÍA ELIZABETH VILLALBA | Date: 2026-02-22T15:00:00.000Z | Slot: DAY

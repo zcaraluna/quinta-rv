@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BookingStatusBadge } from "./status-badge";
+import { BookingActions } from "./booking-actions";
+import { isAfter } from "date-fns";
 
 interface CalendarViewProps {
     bookings: any[];
@@ -50,6 +52,21 @@ export function CalendarView({ bookings }: CalendarViewProps) {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
         return bookingsByDate[dateStr] || [];
     }, [selectedDate, bookingsByDate]);
+
+    const dayConflicts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        selectedDayBookings.forEach(b => {
+            const isActive = b.status === 'CONFIRMED' ||
+                b.status === 'RESERVED' ||
+                b.status === 'MAINTENANCE' ||
+                (b.status === 'PENDING_PAYMENT' && b.expiresAt && isAfter(new Date(b.expiresAt), new Date()));
+
+            if (isActive) {
+                counts[b.slot] = (counts[b.slot] || 0) + 1;
+            }
+        });
+        return counts;
+    }, [selectedDayBookings]);
 
     // Modifiers for react-day-picker
     const modifiers = {
@@ -142,8 +159,26 @@ export function CalendarView({ bookings }: CalendarViewProps) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <BookingStatusBadge status={booking.status} expiresAt={booking.expiresAt ? new Date(booking.expiresAt) : null} />
+                                                <div className="flex items-start gap-2">
+                                                    <BookingStatusBadge status={booking.status} expiresAt={booking.expiresAt ? new Date(booking.expiresAt) : null} />
+                                                    <BookingActions
+                                                        bookingId={booking.id}
+                                                        currentStatus={booking.status}
+                                                        guestName={booking.guestName}
+                                                        bookingDate={new Date(booking.bookingDate)}
+                                                        slot={booking.slot}
+                                                    />
+                                                </div>
                                             </div>
+
+                                            {dayConflicts[booking.slot] > 1 && (
+                                                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 p-2 rounded-xl">
+                                                    <AlertCircle className="h-3.5 w-3.5 text-red-600" />
+                                                    <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter">
+                                                        Conflicto detected en este turno
+                                                    </span>
+                                                </div>
+                                            )}
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-muted/50">
                                                 <a

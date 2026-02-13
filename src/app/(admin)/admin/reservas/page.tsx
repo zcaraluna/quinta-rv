@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { bookings } from "@/lib/schema";
-import { desc, eq, and, sql, count, isNull, ilike, or, gte } from "drizzle-orm";
+import { desc, eq, and, sql, count, isNull, isNotNull, ilike, or, gte } from "drizzle-orm";
 import {
     Calendar,
     User,
@@ -50,8 +50,21 @@ export default async function BookingsPage({
     const currentSearch = params.search || "";
 
     // Build query conditions
-    const conditions = [isNull(bookings.deletedAt)];
-    if (currentStatus !== "ALL") {
+    const isExpiredFilter = currentStatus === "EXPIRED";
+    const conditions: any[] = [];
+
+    // Deleted-at logic:
+    // - EXPIRED filter: show only soft-deleted
+    // - Search active: show both deleted and non-deleted
+    // - Otherwise: show only non-deleted
+    if (isExpiredFilter) {
+        conditions.push(isNotNull(bookings.deletedAt));
+    } else if (!currentSearch) {
+        conditions.push(isNull(bookings.deletedAt));
+    }
+    // When searching, we don't filter by deletedAt — show all matches
+
+    if (currentStatus !== "ALL" && !isExpiredFilter) {
         conditions.push(eq(bookings.status, currentStatus as any));
     }
     if (currentSearch) {
@@ -59,10 +72,9 @@ export default async function BookingsPage({
         const searchConditions = [
             ilike(bookings.guestName, `%${currentSearch}%`),
             ilike(bookings.guestEmail, `%${currentSearch}%`),
-            ilike(bookings.guestWhatsapp, `%${currentSearch}%`), // Match raw number too
+            ilike(bookings.guestWhatsapp, `%${currentSearch}%`),
         ];
 
-        // If it looks like a phone number or partial phone number, search normalized column
         if (normalizedSearch) {
             searchConditions.push(
                 sql`regexp_replace(${bookings.guestWhatsapp}, '[^0-9]', '', 'g') ILIKE ${`%${normalizedSearch}%`}`
@@ -75,7 +87,7 @@ export default async function BookingsPage({
         }
     }
 
-    const whereClause = and(...conditions);
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     // Fetch total count for pagination
     const [totalRes] = await db.select({ value: count() }).from(bookings).where(whereClause || sql`1=1`);
@@ -126,6 +138,7 @@ export default async function BookingsPage({
         { label: "Completadas", value: "COMPLETED" },
         { label: "Canceladas", value: "CANCELLED" },
         { label: "Mantenimiento", value: "MAINTENANCE" },
+        { label: "Expiradas", value: "EXPIRED" },
     ];
 
     return (
@@ -200,72 +213,76 @@ export default async function BookingsPage({
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            paginatedBookings.map((booking) => (
-                                <TableRow key={booking.id} className="hover:bg-muted/10 border-b group">
-                                    <TableCell className="py-6 px-8">
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{booking.guestName}</span>
-                                                {conflictMap.get(booking.id) && (
-                                                    <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-sm h-fit">
-                                                        CONFLICTO
+                            paginatedBookings.map((booking) => {
+                                const bookingIsDeleted = booking.deletedAt !== null;
+                                return (
+                                    <TableRow key={booking.id} className={cn("hover:bg-muted/10 border-b group", bookingIsDeleted && "opacity-50")}>
+                                        <TableCell className="py-6 px-8">
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{booking.guestName}</span>
+                                                    {conflictMap.get(booking.id) && (
+                                                        <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-sm h-fit">
+                                                            CONFLICTO
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-wrap items-center gap-4 mt-2">
+                                                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
+                                                        <Phone className="h-3.5 w-3.5" /> {booking.guestWhatsapp}
                                                     </span>
-                                                )}
+                                                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
+                                                        <Mail className="h-3.5 w-3.5" /> {booking.guestEmail}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-wrap items-center gap-4 mt-2">
-                                                <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
-                                                    <Phone className="h-3.5 w-3.5" /> {booking.guestWhatsapp}
+                                        </TableCell>
+                                        <TableCell className="py-6">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-base capitalize">
+                                                    {format(booking.bookingDate, "EEEE d 'de' MMMM", { locale: es })}
                                                 </span>
-                                                <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
-                                                    <Mail className="h-3.5 w-3.5" /> {booking.guestEmail}
+                                                <span className="text-[11px] font-black text-primary/70 uppercase tracking-widest mt-1">
+                                                    {booking.slot === 'DAY'
+                                                        ? 'Turno Día (09:00 - 18:00)'
+                                                        : 'Turno Noche (20:00 - 07:00)'
+                                                    }
                                                 </span>
                                             </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="py-6">
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-base capitalize">
-                                                {format(booking.bookingDate, "EEEE d 'de' MMMM", { locale: es })}
-                                            </span>
-                                            <span className="text-[11px] font-black text-primary/70 uppercase tracking-widest mt-1">
-                                                {booking.slot === 'DAY'
-                                                    ? 'Turno Día (09:00 - 18:00)'
-                                                    : 'Turno Noche (20:00 - 07:00)'
+                                        </TableCell>
+                                        <TableCell className="py-6">
+                                            <BookingStatusBadge status={booking.status} expiresAt={booking.expiresAt} isDeleted={bookingIsDeleted} />
+                                        </TableCell>
+                                        <TableCell className="py-6 font-black text-lg text-center text-emerald-600">
+                                            {(() => {
+                                                const total = Number(booking.totalPrice);
+                                                if (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED') {
+                                                    return formatCurrency(total);
                                                 }
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="py-6">
-                                        <BookingStatusBadge status={booking.status} expiresAt={booking.expiresAt} />
-                                    </TableCell>
-                                    <TableCell className="py-6 font-black text-lg text-center text-emerald-600">
-                                        {(() => {
-                                            const total = Number(booking.totalPrice);
-                                            if (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED') {
-                                                return formatCurrency(total);
-                                            }
-                                            if (booking.status === 'RESERVED') {
-                                                return (
-                                                    <div className="flex flex-col items-center">
-                                                        <span>{formatCurrency(total / 2)}</span>
-                                                        <span className="text-[10px] text-muted-foreground uppercase opacity-50">Seña (50%)</span>
-                                                    </div>
-                                                );
-                                            }
-                                            return formatCurrency(0);
-                                        })()}
-                                    </TableCell>
-                                    <TableCell className="py-6 px-8 text-right">
-                                        <BookingActions
-                                            bookingId={booking.id}
-                                            currentStatus={booking.status}
-                                            guestName={booking.guestName}
-                                            bookingDate={booking.bookingDate}
-                                            slot={booking.slot}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))
+                                                if (booking.status === 'RESERVED') {
+                                                    return (
+                                                        <div className="flex flex-col items-center">
+                                                            <span>{formatCurrency(total / 2)}</span>
+                                                            <span className="text-[10px] text-muted-foreground uppercase opacity-50">Seña (50%)</span>
+                                                        </div>
+                                                    );
+                                                }
+                                                return formatCurrency(0);
+                                            })()}
+                                        </TableCell>
+                                        <TableCell className="py-6 px-8 text-right">
+                                            <BookingActions
+                                                bookingId={booking.id}
+                                                currentStatus={booking.status}
+                                                guestName={booking.guestName}
+                                                bookingDate={booking.bookingDate}
+                                                slot={booking.slot}
+                                                isDeleted={bookingIsDeleted}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })
                         )}
                     </TableBody>
                 </Table>

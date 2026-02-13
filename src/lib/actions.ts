@@ -307,6 +307,15 @@ export async function deleteBooking(id: string) {
     return { success: true };
 }
 
+export async function restoreBooking(id: string) {
+    await db.update(bookings)
+        .set({ deletedAt: null })
+        .where(eq(bookings.id, id));
+    revalidatePath('/admin/reservas');
+    revalidatePath('/');
+    return { success: true };
+}
+
 export async function reassignBooking(id: string, newDateStr: string, newSlot: 'DAY' | 'NIGHT') {
     const datePart = newDateStr.split('T')[0];
     const normalizedDate = new Date(`${datePart}T12:00:00Z`);

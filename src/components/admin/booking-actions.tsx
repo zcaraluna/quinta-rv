@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateBookingStatus, deleteBooking } from "@/lib/actions";
+import { updateBookingStatus, deleteBooking, restoreBooking } from "@/lib/actions";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,7 +19,8 @@ import {
     Trash2,
     Construction,
     Loader2,
-    ArrowRightLeft
+    ArrowRightLeft,
+    RotateCcw
 } from "lucide-react";
 import { toast } from "sonner";
 import { ReassignDialog } from "./reassign-dialog";
@@ -29,13 +30,15 @@ export function BookingActions({
     currentStatus,
     guestName,
     bookingDate,
-    slot
+    slot,
+    isDeleted
 }: {
     bookingId: string;
     currentStatus: string;
     guestName: string;
     bookingDate: Date;
     slot: 'DAY' | 'NIGHT';
+    isDeleted?: boolean;
 }) {
     const [isPending, startTransition] = useTransition();
     const [reassignOpen, setReassignOpen] = useState(false);
@@ -62,6 +65,33 @@ export function BookingActions({
             }
         });
     };
+
+    const handleRestore = () => {
+        startTransition(async () => {
+            try {
+                await restoreBooking(bookingId);
+                toast.success("Reserva restaurada correctamente");
+            } catch (error) {
+                toast.error("Error al restaurar la reserva");
+            }
+        });
+    };
+
+    // Deleted bookings only show the Restore action
+    if (isDeleted) {
+        return (
+            <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl gap-2 font-bold text-xs text-emerald-600 border-emerald-500/30 hover:bg-emerald-50 hover:text-emerald-700"
+                onClick={handleRestore}
+                disabled={isPending}
+            >
+                {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+                Restaurar
+            </Button>
+        );
+    }
 
     return (
         <>

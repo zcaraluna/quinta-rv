@@ -1,9 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Clock, CheckCircle2, XCircle, AlertTriangle, Construction } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, AlertTriangle, Construction, Trash2 } from "lucide-react";
 
-export function BookingStatusBadge({ status, expiresAt }: { status: string; expiresAt: Date | null }) {
+export function BookingStatusBadge({ status, expiresAt, isDeleted }: { status: string; expiresAt: Date | null; isDeleted?: boolean }) {
     const isExpired = status === "PENDING_PAYMENT" && expiresAt && new Date() > expiresAt;
 
     const config: Record<string, { label: string; icon: any; className: string }> = {
@@ -39,7 +39,9 @@ export function BookingStatusBadge({ status, expiresAt }: { status: string; expi
         },
     };
 
-    const current = config[status] || { label: status, icon: AlertTriangle, className: "bg-muted text-muted-foreground" };
+    const current = isDeleted
+        ? { label: "Eliminada", icon: Trash2, className: "bg-red-500/10 text-red-400 border-red-500/20" }
+        : (config[status] || { label: status, icon: AlertTriangle, className: "bg-muted text-muted-foreground" });
     const Icon = current.icon;
 
     return (

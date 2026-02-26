@@ -22,7 +22,7 @@ export const roleEnum = pgEnum("role", [
 export const bookings = pgTable("bookings", {
     id: uuid("id").defaultRandom().primaryKey(),
     guestName: text("guest_name").notNull(),
-    guestEmail: text("guest_email").notNull(),
+    guestEmail: text("guest_email"),
     guestWhatsapp: text("guest_whatsapp").notNull(),
     bookingDate: timestamp("booking_date").notNull(), // The selected day
     slot: slotEnum("slot").notNull(),

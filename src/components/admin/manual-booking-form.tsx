@@ -32,7 +32,7 @@ import { useState } from "react";
 
 const formSchema = z.object({
     guestName: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
-    guestEmail: z.string().email("Correo electrónico inválido"),
+    guestEmail: z.string().email("Correo electrónico inválido").optional().or(z.literal("")),
     guestWhatsapp: z.string().min(8, "El número de WhatsApp es inválido"),
     bookingDate: z.date(),
     slot: z.enum(["DAY", "NIGHT"]),
@@ -120,7 +120,7 @@ export function ManualBookingForm() {
                             name="guestEmail"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="font-bold">Correo Electrónico</FormLabel>
+                                    <FormLabel className="font-bold">Correo Electrónico (Opcional)</FormLabel>
                                     <FormControl>
                                         <Input placeholder="juan@ejemplo.com" className="h-12 rounded-xl" {...field} />
                                     </FormControl>

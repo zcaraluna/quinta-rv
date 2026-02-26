@@ -41,7 +41,7 @@ import { PricingModal } from "./pricing-modal"
 
 const formSchema = z.object({
     guestName: z.string().min(2, "Nombre muy corto"),
-    guestEmail: z.string().email("Email inválido"),
+    guestEmail: z.string().email("Email inválido").optional().or(z.literal("")),
     guestWhatsapp: z.string().min(8, "Mínimo 8 dígitos"),
     bookingDate: z.date(),
     slot: z.enum(["DAY", "NIGHT"]),
@@ -105,7 +105,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
     function onSubmit(values: z.infer<typeof formSchema>) {
         const formData = new FormData()
         formData.append("guestName", values.guestName)
-        formData.append("guestEmail", values.guestEmail)
+        formData.append("guestEmail", values.guestEmail || "")
         formData.append("guestWhatsapp", values.guestWhatsapp)
         formData.append("bookingDate", values.bookingDate.toISOString())
         formData.append("slot", values.slot)
@@ -354,7 +354,7 @@ export function BookingForm({ unavailableSlots }: BookingFormProps) {
                             name="guestEmail"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Email</FormLabel>
+                                    <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Email (Opcional)</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="juan@ejemplo.com"

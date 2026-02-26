@@ -196,7 +196,7 @@ export function CalendarView({ bookings }: CalendarViewProps) {
                                                     <div className="h-7 w-7 rounded-full bg-white flex items-center justify-center text-primary border border-muted/50 shadow-sm">
                                                         <Mail className="h-3.5 w-3.5" />
                                                     </div>
-                                                    <span className="font-bold text-xs truncate select-all">{booking.guestEmail}</span>
+                                                    <span className="font-bold text-xs truncate select-all">{booking.guestEmail || "Sin email"}</span>
                                                 </div>
                                             </div>
                                         </div>

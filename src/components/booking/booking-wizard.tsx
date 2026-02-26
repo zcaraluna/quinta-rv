@@ -52,7 +52,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const formSchema = z.object({
     guestName: z.string().min(2, "El nombre es obligatorio"),
-    guestEmail: z.string().email("Email inválido o vacío"),
+    guestEmail: z.string().email("Email inválido").optional().or(z.literal("")),
     guestWhatsapp: z.string().min(8, "El WhatsApp es obligatorio"),
     bookingDate: z.date(),
     slot: z.enum(["DAY", "NIGHT"]),
@@ -143,7 +143,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
     async function onSubmit(values: FormValues) {
         const formData = new FormData()
         formData.append("guestName", values.guestName)
-        formData.append("guestEmail", values.guestEmail)
+        formData.append("guestEmail", values.guestEmail || "")
         formData.append("guestWhatsapp", values.guestWhatsapp)
         formData.append("bookingDate", format(values.bookingDate, "yyyy-MM-dd"))
         formData.append("slot", values.slot)
@@ -651,7 +651,7 @@ export function BookingWizard({ unavailableSlots, pricingConfig: PRICING }: Book
                                         render={({ field }) => (
                                             <FormItem className="space-y-2">
                                                 <FormLabel className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                                    <Mail size={14} /> Correo Electrónico
+                                                    <Mail size={14} /> Correo Electrónico (Opcional)
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="juan@ejemplo.com" className="h-14 rounded-2xl font-bold transition-all focus:ring-4 focus:ring-primary/10 border-muted-foreground/20 text-lg" {...field} />

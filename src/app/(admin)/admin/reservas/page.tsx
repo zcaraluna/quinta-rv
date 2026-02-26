@@ -231,8 +231,8 @@ export default async function BookingsPage({
                                                     <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
                                                         <Phone className="h-3.5 w-3.5" /> {booking.guestWhatsapp}
                                                     </span>
-                                                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold">
-                                                        <Mail className="h-3.5 w-3.5" /> {booking.guestEmail}
+                                                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold italic">
+                                                        <Mail className="h-3.5 w-3.5" /> {booking.guestEmail || "Sin email"}
                                                     </span>
                                                 </div>
                                             </div>

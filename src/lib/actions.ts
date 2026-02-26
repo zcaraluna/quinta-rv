@@ -41,7 +41,7 @@ export async function getPricingConfig() {
 
 const bookingSchema = z.object({
     guestName: z.string().min(3),
-    guestEmail: z.string().email(),
+    guestEmail: z.string().email().optional().or(z.literal("")),
     guestWhatsapp: z.string().min(8),
     bookingDate: z.date(),
     slot: z.enum(["DAY", "NIGHT"]),
